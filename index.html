@@ -485,6 +485,7 @@ button.mq:hover{outline:1.5px solid var(--accent-2);outline-offset:2px;border-ra
 .lcard{position:relative}
 .photo-badge{position:absolute;top:20px;right:20px;width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--surface);box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:25}
 .liked-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.mobile-settings{display:none}
 /* ---------- phones ---------- */
 @media (max-width: 899px){
   .app{grid-template-columns:minmax(0,1fr);padding:0;gap:0}
@@ -521,6 +522,10 @@ button.mq:hover{outline:1.5px solid var(--accent-2);outline-offset:2px;border-ra
   .steps li::before{margin:0}
   .pins{columns:2 150px;column-gap:12px}
   .fb-opts{grid-template-columns:1fr}
+  .mobile-settings{display:grid;place-items:center;position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:31;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--accent-deep);box-shadow:var(--shadow)}
+  .mobile-settings svg{width:20px;height:20px;stroke-width:1.6}
+  .view{padding-top:22px}
+  .head{padding-right:48px}
   .stats{gap:8px}
   .stat{padding:14px}
   .stat b{font-size:30px}
@@ -664,6 +669,7 @@ const ICONS={
  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6L8.5 12l6 6"/></svg>',
  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v16H6.5A1.5 1.5 0 0 0 5 20.5z"/><path d="M5 20.5A1.5 1.5 0 0 0 6.5 22H19"/><path d="M9 7h6"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
  locate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
 };
 const icon=n=>{ const s=document.createElement('span'); s.innerHTML=ICONS[n]; s.style.display='contents'; return s; };
@@ -1236,7 +1242,8 @@ function render(){
   const views={closet:viewCloset,outfits:viewOutfits,journal:viewJournal,inspiration:viewInspiration,liked:viewLiked};
   const prev=document.querySelector('main')?.scrollTop||0;
   const main=h('main',{},views[S.view]());
-  root.replaceChildren(h('div',{class:'app'},rail,main,tabbar)); main.scrollTop=prev;
+  const gearBtn=h('button',{class:'mobile-settings','aria-label':'Colors, backup and settings',onclick:openSettings},icon('gear'));
+  root.replaceChildren(h('div',{class:'app'},rail,main,tabbar,gearBtn)); main.scrollTop=prev;
 }
 function tileImg(it){ return h('img',{src:IMG.url(it.img||it.photo),alt:'',class:it.cutout?'':'raw',loading:'lazy'}); }
 function dotsOf(it){ return h('span',{class:'dots'},(it.colors||[pc(it)]).slice(0,3).map(c=>h('span',{class:'cdot',style:{background:c.hex}}))); }
@@ -2093,7 +2100,7 @@ function openSettings(){
   openModal(h('div',{},h('div',{class:'modal-head'},h('h2',{},'Settings')),h('div',{class:'modal-body',style:{display:'grid',gap:'20px'}},
     h('div',{},h('h3',{style:{fontSize:'24px',fontStyle:'italic',fontWeight:500,marginBottom:'10px'}},'Color theme'),paletteSection()),
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'Your data'),
-      h('p',{class:'muted',style:{margin:'0 0 12px'}},'Everything is saved privately in this browser. To move your closet to your phone or another computer, download a backup here and restore it there.'),
+      h('p',{class:'muted',style:{margin:'0 0 12px'}},'Everything is saved privately in this browser. To move your closet to another device, tap Download backup here, send the file to that device, then open these settings there and tap Restore from backup.'),
       h('div',{style:{display:'flex',gap:'10px',flexWrap:'wrap'}},h('button',{class:'btn primary',onclick:exportBackup},'Download backup'),h('label',{class:'btn'},fileIn,'Restore from backup'))),
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'What the stylist has learned'),
       h('p',{class:'muted',style:{margin:'0 0 12px'}},`${Object.keys(S.learn.pairs).length} pairings remembered from your likes, choices and passes.`),
