@@ -404,8 +404,14 @@ button.piece:hover::after{content:"";position:absolute;inset:0;border-radius:18p
 .mq img{width:100%;height:100%;object-fit:contain;filter:var(--drop);display:block;pointer-events:none}
 .mq.fill img{object-fit:fill}
 .mq img.raw{border-radius:10px;filter:none;object-fit:cover}
-.mq.anchor{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
-button.mq:hover{outline:1.5px solid var(--accent-2);outline-offset:2px;border-radius:8px}
+.mq.anchor img{filter:var(--drop) drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 1px var(--accent))}
+button.mq:hover img{filter:var(--drop) drop-shadow(0 0 6px var(--accent-2))}
+button.mq:focus-visible{outline:none}
+button.mq:focus-visible img{filter:var(--drop) drop-shadow(0 0 6px var(--accent))}
+img.soft{-webkit-mask-image:radial-gradient(ellipse 52% 54% at 50% 50%,#000 64%,transparent 100%);mask-image:radial-gradient(ellipse 52% 54% at 50% 50%,#000 64%,transparent 100%)}
+.lookbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.side-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.back-chip{font-size:12px;color:var(--ok);font-weight:600}
 .mq-extra{position:absolute;left:8px;bottom:8px;display:grid;gap:4px;z-index:20}
 .mq-extra span{display:flex;align-items:center;gap:6px;font-size:11.5px;background:var(--surface);border-radius:999px;padding:2px 9px 2px 2px;border:1px solid var(--line)}
 .mq-extra img{width:20px;height:20px;border-radius:50%;object-fit:contain;background:var(--tile)}
@@ -486,6 +492,12 @@ button.mq:hover{outline:1.5px solid var(--accent-2);outline-offset:2px;border-ra
 .photo-badge{position:absolute;top:20px;right:20px;width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--surface);box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:25}
 .liked-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
 .mobile-settings{display:none}
+/* ---------- "something else" inputs ---------- */
+.anycolor{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600;cursor:pointer}
+.anycolor input{width:28px;height:28px;padding:0;border:2px solid var(--surface);border-radius:50%;box-shadow:0 0 0 1px var(--line-strong);background:conic-gradient(#d33,#e8c840,#3f8a4e,#3a6fd8,#7a4fb0,#d33);cursor:pointer;overflow:hidden}
+.anycolor input::-webkit-color-swatch-wrapper{padding:0}
+.anycolor input::-webkit-color-swatch{border:0;border-radius:50%}
+.anycolor input::-moz-color-swatch{border:0;border-radius:50%}
 /* ---------- cutout fixer ---------- */
 .prev-col{display:grid;gap:6px;justify-items:center}
 .fix-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start}
@@ -615,6 +627,12 @@ const CATS = [
 ];
 const CAT={}, SUB={};
 CATS.forEach(c=>{ CAT[c.k]=c; c.subs=c.subs.map(([k,label,f,w,v,x])=>{ const s={k,label,f,w,v:v.split(' ').filter(Boolean),x:x.split(' ').filter(Boolean),cat:c.k}; SUB[k]=s; return s; }); });
+/* "Something else": a type of your own, plus a "Something else" style in every type */
+CATS.push({k:'other',label:'Something else',slot:'acc',subs:[]}); CAT.other=CATS[CATS.length-1];
+CATS.forEach(c=>{ const src=c.subs.length?c.subs:[{f:2.5,w:2}]; const af=+(src.reduce((t,x)=>t+x.f,0)/src.length).toFixed(1), aw=+(src.reduce((t,x)=>t+x.w,0)/src.length).toFixed(1);
+  const st={k:c.k+'-other',label:'Something else',f:af,w:aw,v:[],x:[],cat:c.k}; c.subs.push(st); SUB[st.k]=st; });
+const OTHER_SLOTS=[['top','A top'],['bottom','A bottom'],['dress','A dress or jumpsuit'],['outer','A layer or jacket'],['shoes','Shoes'],['acc','An accessory']];
+const isOtherSub=k=>!!k&&(k==='other'||k.endsWith('-other'));
 
 const VIBES=['minimal','classic','romantic','edgy','sporty','boho','preppy','street','glam','cozy'];
 const VIBE_LABEL={minimal:'Minimal',classic:'Classic',romantic:'Romantic',edgy:'Edgy',sporty:'Sporty',boho:'Boho',preppy:'Preppy',street:'Streetwear',glam:'Glam',cozy:'Cozy'};
@@ -640,11 +658,31 @@ const OCCASIONS=[
 ];
 const ACTIVE={k:'active',label:'Active',p:'staying active',f:1,vib:{sporty:1,cozy:.3,glam:-.8,classic:-.4},prefer:'running sneakers leggings bike athletic-shorts tank hoodie fleece cap backpack',avoid:'pumps strappy loafers silk-blouse blazer gown cocktail'};
 const OCC={}; [...OCCASIONS,ACTIVE].forEach(o=>{ OCC[o.k]=o; o.preferSet=new Set(o.prefer.split(' ').filter(Boolean)); o.avoidSet=new Set(o.avoid.split(' ').filter(Boolean)); });
-const CONDS=[{k:'sunny',label:'Sunny'},{k:'cloudy',label:'Cloudy'},{k:'rainy',label:'Rainy'},{k:'windy',label:'Windy'},{k:'snowy',label:'Snowy'}];
-const FEEDBACK=[{k:'occasion',label:'Fit the occasion better'},{k:'casual',label:'More casual'},{k:'formal',label:'More formal'},{k:'warmer',label:'Warmer'},{k:'cooler',label:'Cooler'},{k:'color',label:"Don't like the colors"},{k:'other',label:'Just show another'}];
-const PATTERNS=['solid','striped','plaid','print','floral','graphic','textured'];
+const CONDS=[{k:'sunny',label:'Sunny'},{k:'cloudy',label:'Cloudy'},{k:'rainy',label:'Rainy'},{k:'windy',label:'Windy'},{k:'snowy',label:'Snowy'},{k:'custom',label:'Something else'}];
+const FEEDBACK=[{k:'occasion',label:'Fit the occasion better'},{k:'casual',label:'More casual'},{k:'formal',label:'More formal'},{k:'warmer',label:'Warmer'},{k:'cooler',label:'Cooler'},{k:'color',label:"Don't like the colors"},{k:'other',label:'Just show another'},{k:'custom',label:'Something else'}];
+const PATTERNS=['solid','striped','plaid','print','floral','graphic','textured','other'];
 const BOLD_PATTERNS=new Set(['striped','plaid','print','floral','graphic']);
-const FITS=['fitted','regular','relaxed','oversized'];
+const FITS=['fitted','regular','relaxed','oversized','other'];
+const optLabel=x=>x==='other'?'Something else':cap(x);
+/* reading your own words */
+function condFromText(t){ t=(t||'').toLowerCase();
+  if(/snow|sleet|hail|blizzard|\bice\b|icy|freez|frost/.test(t)) return 'snowy';
+  if(/rain|drizzl|shower|storm|thunder|wet|monsoon|downpour|misty rain/.test(t)) return 'rainy';
+  if(/wind|breez|gust|blustery/.test(t)) return 'windy';
+  if(/sun|clear|bright|hot|heat|humid|muggy|warm/.test(t)) return 'sunny';
+  return 'cloudy'; }
+const condKey=(c,t)=>c==='custom'?condFromText(t):c;
+const condLabel=(c,t)=>c==='custom'?(((t||'').trim())||'Something else'):(CONDS.find(x=>x.k===c)?.label||cap(c||''));
+function feedbackFromText(t){ t=(t||'').toLowerCase(); const k=[];
+  const cooler=/too (warm|hot)|\bhot\b|lighter|breath|heat|sweat/.test(t);
+  if(/formal|dressy|dress up|dressier|polish|fancy|elegant|smart|classy/.test(t)&&!/too (formal|dressy|fancy)/.test(t)) k.push('formal');
+  if(/casual|comfy|comfort|relax|chill|sporty|dress down|too (formal|dressy|fancy)/.test(t)) k.push('casual');
+  if(cooler) k.push('cooler'); else if(/warm|cold|chilly|freez|layer|cover/.test(t)) k.push('warmer');
+  if(/colou?r|bright|dark|dull|tone|shade|match|clash/.test(t)) k.push('color');
+  if(/occasion|appropriate|suit|for (the|a) /.test(t)) k.push('occasion');
+  if(/shoe|sneaker|boot|heel|sandal|loafer|flat/.test(t)) k.push('no-shoes');
+  if(/jacket|coat|blazer|layer|cardigan/.test(t)&&/no |don.?t|without|not /.test(t)) k.push('no-outer');
+  return k.length?k:['other']; }
 
 /* Color families used for names, filters and matching */
 const COLORS=[
@@ -1001,20 +1039,23 @@ async function saveMeta(){ try{ await DB.put('meta','settings',clean({profileUse
 const S={
   user:null, items:[], liked:[], pins:[], wear:[], wearIdx:new Map(), wornKeys:new Set(), plan:null, trip:null, look:'collage', profileUse:true, myVibes:[], learn:{pairs:{},items:{}}, hinted:false,
   view:'closet', cat:'all', color:null, sort:'newest', q:'',
-  gen:{ mode:'today', occasion:'university', custom:'', cond:'sunny', tempF:65, unit:'F', forecast:null, anchor:null, pin:null,
+  gen:{ mode:'today', occasion:'university', custom:'', cond:'sunny', condText:'', tempF:65, unit:'F', forecast:null, anchor:null, pin:null,
         adj:{form:0,warm:0,strict:false,forceOuter:false}, avoidColors:new Set(), avoidItems:new Set(), recent:new Map(),
         seen:new Set(), queue:[], current:null, selected:null, phase:'idle', collapsed:false, tab:'pieces' },
 };
 const I=id=>S.items.find(i=>i.id===id);
 const subOf=it=>SUB[it.sub]||null;
-const slotOf=it=>CAT[it.category]?.slot;
+const slotOf=it=>it.category==='other'?(it.otherSlot||'acc'):CAT[it.category]?.slot;
 const keyOf=it=>it.sub||it.category;
 const vibesOf=it=>(it.vibes&&it.vibes.length)?it.vibes:(subOf(it)?.v||[]);
 const flagsOf=it=>{ const f=new Set(subOf(it)?.x||[]); if(it.waterproof) f.add('waterproof'); return f; };
 const fOf=it=>it.formality??subOf(it)?.f??3;
 const wOf=it=>it.warmth??subOf(it)?.w??2;
 const pc=it=>(it.colors&&it.colors[0])||colorFromFam(it.color||'gray');
-const styleLabel=it=>subOf(it)?.label||CAT[it.category]?.label||'';
+const styleLabel=it=>isOtherSub(it.sub)?(it.customStyle||(it.category==='other'?(it.customType||'Something else'):'Something else')):(subOf(it)?.label||CAT[it.category]?.label||'');
+const catLabel=it=>it.category==='other'?(it.customType||'Something else'):(CAT[it.category]?.label||'');
+const patLabel=it=>it.pattern==='other'?(it.patternLabel||'Something else'):cap(it.pattern||'solid');
+const fitLabel=it=>it.fit==='other'?(it.fitLabel||'Something else'):cap(it.fit||'regular');
 
 /* =====================================================================
    7. STYLIST ENGINE — scores every combination with styling rules
@@ -1023,9 +1064,9 @@ const MAIN_SLOTS=['outer','top','dress','bottom','shoes'];
 function piecesOf(o){ return MAIN_SLOTS.filter(k=>o[k]&&I(o[k])).map(k=>({slot:k,it:I(o[k])})); }
 function comboKey(o){ return [o.top,o.bottom,o.dress,o.outer,o.shoes].filter(Boolean).sort().join('+'); }
 function requiredWarmth(t){ return t>=82?1.1:t>=74?1.7:t>=66?2.4:t>=58?3.2:t>=48?4:t>=38?4.8:5.6; }
-function resolveOcc(){
-  const g=S.gen; if(g.occasion!=='custom') return OCC[g.occasion];
-  const t=(g.custom||'').toLowerCase(); const w=(k)=>({...OCC[k],p:g.custom.trim()||OCC[k].p});
+function resolveOcc(){ const g=S.gen; return g.occasion!=='custom'?OCC[g.occasion]:occFromText(g.custom); }
+function occFromText(text){
+  const t=(text||'').toLowerCase(), nm=(text||'').trim(); const w=(k)=>({...OCC[k],p:nm||OCC[k].p,label:nm||'Something else'});
   if(/interview|office|work|meeting|conference|presentation|career/.test(t)) return w('networking');
   if(/gala|wedding|black.?tie|formal|ball|opera|ceremony|graduation/.test(t)) return w('formal');
   if(/party|club|birthday|night out|concert|bar/.test(t)) return w('party');
@@ -1036,7 +1077,7 @@ function resolveOcc(){
 }
 function profileColorBonus(c,pr){ if(!pr) return 0; const share=(pr.fam[c.fam]||0)/pr.maxFam; const near=Math.min(...pr.palette.map(p=>dE(c,p))); return (.6*share+.6*Math.max(0,1-near/38)-.3)*pr.strength; }
 function makeCtx(opts={}){
-  const g=S.gen, occ=opts.occ||resolveOcc(), t=opts.t??(opts.mild?66:g.tempF), cond=opts.cond??(opts.mild?'cloudy':g.cond);
+  const g=S.gen, occ=opts.occ||resolveOcc(), t=opts.t??(opts.mild?66:g.tempF), cond=condKey(opts.cond??(opts.mild?'cloudy':g.cond),opts.condText??g.condText);
   const prof=S.profileUse?buildProfile():null;
   return { occ, T:clamp(occ.f+(opts.fresh?0:g.adj.form),.5,5), t, R:requiredWarmth(t)+(opts.fresh?0:g.adj.warm*.7), cond, planUse:opts.planUse||null, trip:!!opts.trip,
     wet:cond==='rainy'||cond==='snowy', snow:cond==='snowy', windy:cond==='windy'||(g.forecast&&g.forecast.wind>=18), sunny:cond==='sunny',
@@ -1172,7 +1213,7 @@ function weatherScore(o,ctx,why,tips){
   return s;
 }
 function silhouetteScore(o,why){
-  const V={fitted:0,regular:1,relaxed:2,oversized:3}; const top=I(o.top), bot=I(o.bottom); let s=0;
+  const V={fitted:0,regular:1,relaxed:2,oversized:3,other:1}; const top=I(o.top), bot=I(o.bottom); let s=0;
   if(top&&bot){ const a=V[top.fit||'regular'], b=V[bot.fit||'regular'];
     if(a+b>=5) s-=.7; else if(Math.abs(a-b)>=2){ s+=.35; const loose=a>b?top:bot, tight=a>b?bot:top; why(.35,`The ${(loose.fit||'').toLowerCase()} ${loose.name.toLowerCase()} balances the ${(tight.fit||'').toLowerCase()} ${tight.name.toLowerCase()}`,'fit'); } }
   const ou=I(o.outer), dr=I(o.dress); if(ou&&dr&&(ou.fit==='oversized'||ou.fit==='relaxed')&&(dr.fit==='fitted'||!dr.fit)) s+=.2;
@@ -1325,7 +1366,7 @@ function render(){
   const gearBtn=h('button',{class:'mobile-settings','aria-label':'Colors, backup and settings',onclick:openSettings},icon('gear'));
   root.replaceChildren(h('div',{class:'app'},rail,main,tabbar,gearBtn)); main.scrollTop=prev;
 }
-function tileImg(it){ return h('img',{src:IMG.url(it.img||it.photo),alt:'',class:it.cutout?'':'raw',loading:'lazy'}); }
+function tileImg(it){ return h('img',{src:IMG.url(it.img||it.photo),alt:'',class:it.cutout?(it.worn?'soft':''):'raw',loading:'lazy'}); }
 function dotsOf(it){ return h('span',{class:'dots'},(it.colors||[pc(it)]).slice(0,3).map(c=>h('span',{class:'cdot',style:{background:c.hex}}))); }
 
 /* ---------- accounts (like Loom: stored on this device) ---------- */
@@ -1370,7 +1411,7 @@ function sortedItems(){
   let list=S.items.slice();
   if(S.cat!=='all') list=list.filter(i=>i.category===S.cat);
   if(S.color) list=list.filter(i=>(i.colors||[]).some((c,k)=>c.fam===S.color&&(k===0||c.w>=.2)));
-  if(S.q){ const q=S.q.toLowerCase(); list=list.filter(i=>[i.name,i.brand,i.material,styleLabel(i),CAT[i.category]?.label,...(i.colors||[]).map(c=>colorWord(c.fam)),i.pattern,...vibesOf(i)].join(' ').toLowerCase().includes(q)); }
+  if(S.q){ const q=S.q.toLowerCase(); list=list.filter(i=>[i.name,i.brand,i.material,styleLabel(i),catLabel(i),i.patternLabel,i.fitLabel,i.moodText,...(i.colors||[]).map(c=>colorWord(c.fam)),i.pattern,...vibesOf(i)].join(' ').toLowerCase().includes(q)); }
   if(S.sort==='color') list.sort((a,b)=>(COLOR[pc(a).fam]?.order??99)-(COLOR[pc(b).fam]?.order??99)||pc(a).L-pc(b).L);
   else if(S.sort==='category') list.sort((a,b)=>CATS.findIndex(c=>c.k===a.category)-CATS.findIndex(c=>c.k===b.category)||b.createdAt-a.createdAt);
   else if(S.sort==='name') list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -1406,7 +1447,7 @@ function itemCard(it,onOpen){
   const card=h('button',{class:'card'+(it.laundry?' laundry':''),'aria-label':`${it.name}${it.laundry?', in the laundry':''}. Double-click for details`,
     onclick:()=>{ const now=Date.now(); if(lastTap.id===it.id&&now-lastTap.t<400){ lastTap={id:null,t:0}; onOpen(it); return; } lastTap={id:it.id,t:now}; document.querySelectorAll('.card.armed').forEach(c=>c.classList.remove('armed')); card.classList.add('armed'); },
     onkeydown:e=>{ if(e.key==='Enter'){ e.preventDefault(); onOpen(it); } }},
-    h('div',{class:'tile'},tileImg(it),it.laundry?h('span',{class:'lbadge'},'In the laundry'):null),h('div',{class:'name'},it.name),h('div',{class:'meta'},dotsOf(it),it.brand?`${styleLabel(it)}, ${it.brand}`:styleLabel(it)));
+    h('div',{class:'tile',onpointerenter:it.back?e=>{ const im=e.currentTarget.querySelector('img'); im.src=IMG.url(it.back); im.className=it.backCutout?(it.worn?'soft':''):'raw'; }:null,onpointerleave:it.back?e=>{ const im=e.currentTarget.querySelector('img'); im.src=IMG.url(it.img||it.photo); im.className=it.cutout?(it.worn?'soft':''):'raw'; }:null},tileImg(it),it.laundry?h('span',{class:'lbadge'},'In the laundry'):null),h('div',{class:'name'},it.name),h('div',{class:'meta'},dotsOf(it),it.brand?`${styleLabel(it)}, ${it.brand}`:styleLabel(it)));
   return card;
 }
 function gridCards(){ const list=sortedItems(); if(!list.length) return [h('p',{class:'muted'},'Nothing matches those filters.')]; return list.map(it=>itemCard(it,openDetail)); }
@@ -1423,7 +1464,7 @@ function openModal(content,{size='',onClose}={}){
 }
 
 /* ---------- upload and scan ---------- */
-function makeName(p){ const sub=SUB[p.sub]; const base=sub?sub.label.toLowerCase():(CAT[p.category]?.label.toLowerCase()||'piece'); const pat=['striped','plaid','floral','graphic'].includes(p.pattern)&&!base.includes(p.pattern)?p.pattern+' ':''; return cap(`${pat}${colorWord(p.colors[p.main||0].fam)} ${base}`.replace('graphic graphic','graphic')); }
+function makeName(p){ const sub=SUB[p.sub]; const base=(isOtherSub(p.sub)?(p.customStyle||(p.category==='other'?p.customType:'')||(p.category!=='other'?CAT[p.category].label.replace(/s$/,''):'')||'piece'):(sub?sub.label:(CAT[p.category]?.label||'piece'))).toLowerCase(); const pat=['striped','plaid','floral','graphic'].includes(p.pattern)&&!base.includes(p.pattern)?p.pattern+' ':''; return cap(`${pat}${colorWord(p.colors[p.main||0].fam)} ${base}`.replace('graphic graphic','graphic')); }
 function describeScan(p){
   if(p.status==='scanning') return 'Scanning: finding the edges, colors and pattern…';
   const c=p.colors[p.main||0], g=p.guess;
@@ -1452,21 +1493,32 @@ function openUpload(){
       const subSel=h('select',{disabled:!p.category,onchange:e=>{ p.sub=e.target.value; if(!p.touchedName) p.name=makeName(p); paintRow(); upd(); }},subs.map(s=>h('option',{value:s.k,selected:p.sub===s.k},s.label)));
       const colorRow=h('div',{class:'colorpick'},p.colors.map((c,i)=>h('button',{type:'button',title:`${cap(colorWord(c.fam))} (${Math.round(c.w*100)}%)`,'aria-label':`Main color ${colorWord(c.fam)}`,'aria-pressed':String((p.main||0)===i),style:{background:c.hex},onclick:()=>{ p.main=i; if(!p.touchedName) p.name=makeName(p); paintRow(); }})),
         h('select',{'aria-label':'Change main color family',style:{height:'30px',width:'auto',fontSize:'13px'},onchange:e=>{ const c=colorFromFam(e.target.value); p.colors.splice(p.main||0,1,{...c,w:p.colors[p.main||0].w}); if(!p.touchedName) p.name=makeName(p); paintRow(); }},
-          COLORS.map(c=>h('option',{value:c.k,selected:p.colors[p.main||0].fam===c.k},cap(colorWord(c.k))))));
+          COLORS.map(c=>h('option',{value:c.k,selected:p.colors[p.main||0].fam===c.k},cap(colorWord(c.k))))),
+        h('label',{class:'anycolor',title:'Something else: pick any color'},h('input',{type:'color',value:p.colors[p.main||0].hex,'aria-label':'Pick any other color',onchange:e=>{ const c=colorFromHex(e.target.value); p.colors.splice(p.main||0,1,{...c,w:p.colors[p.main||0].w}); if(!p.touchedName) p.name=makeName(p); paintRow(); }}),'Other'));
+      const nameIt=()=>{ if(!p.touchedName) p.name=makeName(p); };
+      const extra=[
+        p.category==='other'?h('label',{class:'field'},'What is it?',h('input',{value:p.customType||'',placeholder:'e.g. Jumpsuit, kimono',oninput:e=>{ p.customType=e.target.value; nameIt(); }})):null,
+        p.category==='other'?h('label',{class:'field'},'Wear it as',h('select',{onchange:e=>p.otherSlot=e.target.value},OTHER_SLOTS.map(([k,l])=>h('option',{value:k,selected:(p.otherSlot||'acc')===k},l)))):null,
+        isOtherSub(p.sub)?h('label',{class:'field'},'Style name',h('input',{value:p.customStyle||'',placeholder:'e.g. Wrap skirt',oninput:e=>{ p.customStyle=e.target.value; nameIt(); }})):null,
+        p.pattern==='other'?h('label',{class:'field'},'Pattern name',h('input',{value:p.patternLabel||'',placeholder:'e.g. Leopard, polka dot',oninput:e=>p.patternLabel=e.target.value})):null].filter(Boolean);
       r.replaceChildren(
         h('div',{class:'prev-col'},h('div',{class:'tile'},p.preview?h('img',{src:p.preview,alt:'',class:p.cutout?'':'raw'}):null),
           p.status==='ready'?h('button',{class:'more',type:'button',onclick:()=>openCutoutFixer(p.file,r=>{
             if(r.cutout===false){ p.display=null; p.cutout=false; p.preview=URL.createObjectURL(p.photo); }
             else { Object.assign(p,{display:r.display,cutout:true,colors:r.colors,pattern:r.pattern,shape:r.shape,main:0,busy:false}); p.preview=URL.createObjectURL(r.display); }
-            if(!p.touchedName) p.name=makeName(p); p.paint(); })},'Fix cutout'):null),
+            if(!p.touchedName) p.name=makeName(p); p.paint(); })},'Fix cutout'):null,
+          p.status==='ready'?(p.backFile?h('span',{class:'back-chip'},'Back added ',h('button',{class:'more',type:'button',onclick:()=>{ p.backFile=null; p.paint(); }},'Remove'))
+            :h('label',{class:'more',style:{cursor:'pointer'}},h('input',{type:'file',accept:'image/*',class:'sr',onchange:e=>{ if(e.target.files[0]){ p.backFile=e.target.files[0]; p.paint(); } }}),'Add back')):null),
         h('div',{class:'pfields'},
           h('label',{class:'field'+(p.status==='ready'&&!p.category?' bad':'')},h('span',{},'Type',p.guess&&p.guess.cat&&p.category===p.guess.cat?h('span',{class:'detected'},'detected'):null),typeSel),
           h('label',{class:'field'},'Style',subSel),
-          h('label',{class:'field'},'Pattern',h('select',{onchange:e=>{p.pattern=e.target.value; if(!p.touchedName) p.name=makeName(p);}},PATTERNS.map(x=>h('option',{value:x,selected:p.pattern===x},cap(x))))),
+          h('label',{class:'field'},'Pattern',h('select',{onchange:e=>{p.pattern=e.target.value; if(!p.touchedName) p.name=makeName(p); paintRow();}},PATTERNS.map(x=>h('option',{value:x,selected:p.pattern===x},optLabel(x))))),
+          extra,
           h('div',{class:'field wide'},'Main color (tap a detected color)',colorRow),
           p.more?[
             h('label',{class:'field'},'Name',h('input',{value:p.name||'',oninput:e=>{p.name=e.target.value;p.touchedName=true;}})),
-            h('label',{class:'field'},'Fit',h('select',{onchange:e=>p.fit=e.target.value},FITS.map(x=>h('option',{value:x,selected:(p.fit||'regular')===x},cap(x))))),
+            h('label',{class:'field'},'Fit',h('select',{onchange:e=>{ p.fit=e.target.value; paintRow(); }},FITS.map(x=>h('option',{value:x,selected:(p.fit||'regular')===x},optLabel(x))))),
+            p.fit==='other'?h('label',{class:'field'},'Fit name',h('input',{value:p.fitLabel||'',placeholder:'e.g. Cropped, boxy',oninput:e=>p.fitLabel=e.target.value})):null,
             h('label',{class:'field'},'Brand',h('input',{value:p.brand||'',oninput:e=>p.brand=e.target.value}))
           ]:h('div',{class:'wide'},h('button',{class:'more',type:'button',onclick:()=>{p.more=true;paintRow();}},`Name, fit and brand${p.name?`: ${p.name}`:''}`)),
           h('div',{class:'scanline'+(p.status==='scanning'?' busy':'')},describeScan(p))),
@@ -1478,7 +1530,7 @@ function openUpload(){
     for(const f of files){ const p={file:f,status:'scanning',colors:[colorFromFam('gray')],pattern:'solid',main:0,guess:{cat:'',sub:'',conf:0}}; pending.push(p); list.append(row(p)); }
     upd();
     for(const p of pending.filter(x=>x.status==='scanning')){
-      try{ const r=await scanGarment(p.file); Object.assign(p,{photo:r.photo,display:r.display,cutout:r.cutout,busy:!!r.busy,colors:r.colors,pattern:r.pattern,shape:r.shape,guess:r.guess,category:r.guess.cat,sub:r.guess.sub||(r.guess.cat?CAT[r.guess.cat].subs[0].k:''),status:'ready'});
+      try{ const r=await scanGarment(p.file); Object.assign(p,{photo:r.photo,display:r.display,cutout:r.cutout,busy:!!r.busy,worn:!!r.busy,colors:r.colors,pattern:r.pattern,shape:r.shape,guess:r.guess,category:r.guess.cat,sub:r.guess.sub||(r.guess.cat?CAT[r.guess.cat].subs[0].k:''),status:'ready'});
         p.preview=URL.createObjectURL(r.display||r.photo); p.name=makeName(p); p.paint(); }
       catch(e){ console.warn(e); pending.splice(pending.indexOf(p),1); toast(`Couldn't read ${p.file.name}. Try a JPEG or PNG.`); list.replaceChildren(...pending.map(row)); }
       upd();
@@ -1493,7 +1545,10 @@ function openUpload(){
         const sub=SUB[p.sub]; const cols=p.colors.slice(); if(p.main){ const [m]=cols.splice(p.main,1); cols.unshift(m); }
         let f=sub.f; if(['black','navy'].includes(cols[0].fam)&&!sub.x.includes('athletic')) f+=.2; if(cols[0].C>60) f-=.2; if(p.pattern==='graphic') f-=.5;
         const it={id:uid(),img,photo,cutout:!!p.display,category:p.category,sub:p.sub,name:(p.name||'').trim()||makeName(p),brand:(p.brand||'').trim(),material:'',size:'',notes:'',
-          colors:cols,pattern:p.pattern,fit:p.fit||'regular',vibes:null,formality:+clamp(f,.5,5).toFixed(1),warmth:sub.w,waterproof:sub.x.includes('waterproof'),createdAt:Date.now()+n,shape:p.shape};
+          colors:cols,pattern:p.pattern,fit:p.fit||'regular',vibes:null,customType:p.category==='other'?(p.customType||'').trim():undefined,otherSlot:p.category==='other'?(p.otherSlot||'acc'):undefined,
+          customStyle:isOtherSub(p.sub)?(p.customStyle||'').trim():undefined,patternLabel:p.pattern==='other'?(p.patternLabel||'').trim():undefined,fitLabel:p.fit==='other'?(p.fitLabel||'').trim():undefined,formality:+clamp(f,.5,5).toFixed(1),warmth:sub.w,waterproof:sub.x.includes('waterproof'),createdAt:Date.now()+n,shape:p.shape};
+        it.worn=!!p.worn;
+        if(p.backFile){ try{ const rb=await scanGarment(p.backFile); it.backPhoto=await IMG.put(rb.photo); it.back=rb.display?await IMG.put(rb.display):it.backPhoto; it.backCutout=!!rb.display; }catch(e){ console.warn(e); toast(`Couldn't read the back photo for ${it.name}.`); } }
         await persist('items',it); S.items.push(it); n++;
       }catch(e){ console.warn(e); break; }
     }
@@ -1506,69 +1561,104 @@ const scaleEl=v=>h('span',{class:'scale','aria-label':`${Math.round(v)} of 5`},[
 function openDetail(it){
   if(!S.hinted){ S.hinted=true; saveMeta(); }
   const wrap=h('div',{}); const m=openModal(wrap,{onClose:()=>render()});
-  let editing=false, confirmDel=false, styles=null, view='product';
+  let editing=false, confirmDel=false, styles=null, view='product', draft=null;
   paint();
   function paint(){
-    const showPhoto=view==='photo'||!it.cutout;
-    const photo=h('div',{},h('div',{class:'photo'},h('img',{src:IMG.url(showPhoto?it.photo:it.img),alt:it.name,class:showPhoto?'raw':''})),
-      it.cutout?h('div',{class:'photo-tabs'},h('button',{'aria-pressed':String(view==='product'),onclick:()=>{view='product';paint();}},'Product view'),h('button',{'aria-pressed':String(view==='photo'),onclick:()=>{view='photo';paint();}},'Your photo')):h('div',{class:'photo-tabs muted'},'Your photo'),
-      h('div',{class:'photo-tabs'},h('button',{class:'fix-link',onclick:fixCutout},'Fix the cutout')));
+    if(view==='back'&&!it.back) view='product';
+    const src=view==='back'?it.back:view==='photo'?it.photo:(it.cutout?it.img:it.photo);
+    const isRaw=view==='photo'||(view==='back'?!it.backCutout:!it.cutout);
+    const tabs=[['product',it.cutout?'Front':'Front photo'],it.back?['back','Back']:null,it.cutout?['photo','Your photo']:null].filter(Boolean);
+    const backIn=h('input',{type:'file',accept:'image/*',class:'sr',onchange:e=>{ if(e.target.files[0]) addBack(e.target.files[0]); }});
+    const photo=h('div',{},h('div',{class:'photo'},h('img',{src:IMG.url(src),alt:it.name,class:isRaw?'raw':(it.worn?'soft':'')})),
+      tabs.length>1?h('div',{class:'photo-tabs'},tabs.map(([k,l])=>h('button',{'aria-pressed':String(view===k),onclick:()=>{view=k;paint();}},l))):null,
+      h('div',{class:'side-links'},h('button',{class:'fix-link',onclick:()=>fixCutout(view==='back'?'back':'front')},view==='back'?'Fix the back cutout':'Fix the cutout'),
+        h('label',{class:'fix-link',style:{cursor:'pointer'}},backIn,it.back?'Replace the back':'Add the back'),
+        it.back?h('button',{class:'fix-link',onclick:removeBack},'Remove the back'):null));
     const info=editing?editForm():readView();
     const pairs=pairsWellWith(it);
     const pairSec=pairs.length?h('div',{class:'section'},h('h3',{},'Pairs well with'),h('div',{class:'strip'},pairs.map(x=>{ const c=itemCard(x,y=>{ m.close(); openDetail(y); }); return c; }))):null;
     const styleSec=styles?h('div',{class:'section',id:'styles'},h('h3',{},`Ways to wear it`),styles.length?h('div',{class:'mini-grid'},styles.map(o=>miniOutfit(o,it.id,m))):h('p',{class:'muted'},needsMsg())):null;
     wrap.replaceChildren(h('div',{class:'detail'},photo,info,styleSec,pairSec));
   }
-  async function fixCutout(){
-    const blob=await DB.get('images',it.photo); if(!blob){ toast("Couldn't find the original photo."); return; }
+  async function fixCutout(side){
+    const back=side==='back'; const blob=await DB.get('images',back?it.backPhoto:it.photo); if(!blob){ toast("Couldn't find the original photo."); return; }
     openCutoutFixer(blob,async r=>{
       try{
-        if(r.cutout===false){ if(it.img!==it.photo) await IMG.del(it.img); it.img=it.photo; it.cutout=false; }
-        else { const id=await IMG.put(r.display); if(it.img!==it.photo) await IMG.del(it.img); it.img=id; it.cutout=true; it.colors=r.colors; it.pattern=r.pattern; it.shape=r.shape; }
-        await persist('items',it); view='product'; paint(); toast(r.cutout===false?'Using your whole photo':'Cutout updated, and the colors were read again');
+        if(back){
+          if(r.cutout===false){ if(it.back!==it.backPhoto) await IMG.del(it.back); it.back=it.backPhoto; it.backCutout=false; }
+          else { const id=await IMG.put(r.display); if(it.back!==it.backPhoto) await IMG.del(it.back); it.back=id; it.backCutout=true; }
+          view='back';
+        } else {
+          if(r.cutout===false){ if(it.img!==it.photo) await IMG.del(it.img); it.img=it.photo; it.cutout=false; }
+          else { const id=await IMG.put(r.display); if(it.img!==it.photo) await IMG.del(it.img); it.img=id; it.cutout=true; it.colors=r.colors; it.pattern=r.pattern; it.shape=r.shape; }
+          view='product';
+        }
+        await persist('items',it); paint(); toast(r.cutout===false?'Using your whole photo':back?'Back cutout updated':'Cutout updated, and the colors were read again');
       }catch(e){ console.warn(e); toast("Couldn't save the new cutout."); }
     });
+  }
+  async function addBack(file){
+    toast('Scanning the back…');
+    try{ const rb=await scanGarment(file); const bp=await IMG.put(rb.photo); const bd=rb.display?await IMG.put(rb.display):bp;
+      if(it.back&&it.back!==it.backPhoto) await IMG.del(it.back); if(it.backPhoto) await IMG.del(it.backPhoto);
+      it.backPhoto=bp; it.back=bd; it.backCutout=!!rb.display; await persist('items',it); view='back'; paint();
+      toast(rb.display?'Back added. If the cutout looks off, tap Fix the back cutout.':'Back added using the whole photo. Tap Fix the back cutout to select the piece.'); }
+    catch(e){ console.warn(e); toast("Couldn't read that photo."); }
+  }
+  async function removeBack(){
+    try{ if(it.back&&it.back!==it.backPhoto) await IMG.del(it.back); if(it.backPhoto) await IMG.del(it.backPhoto); delete it.back; delete it.backPhoto; delete it.backCutout; await persist('items',it); view='product'; paint(); toast('Back removed'); }
+    catch(e){ toast("Couldn't remove the back."); }
   }
   function readView(){
     const c=CAT[it.category]||{};
     const facts=[['Brand',it.brand||h('span',{class:'muted'},'Not added')],['Material',it.material||h('span',{class:'muted'},'Not added')],it.size?['Size',it.size]:null,
-      ['Pattern',cap(it.pattern||'solid')],['Fit',cap(it.fit||'regular')],['Dressiness',scaleEl(fOf(it))],['Warmth',scaleEl(wOf(it))],it.waterproof?['Weather','Good in the rain']:null,
+      ['Pattern',patLabel(it)],['Fit',fitLabel(it)],['Dressiness',scaleEl(fOf(it))],['Warmth',scaleEl(wOf(it))],it.waterproof?['Weather','Good in the rain']:null,
       ['Worn',(()=>{ const w=wearInfo(it.id); return w.count?`${w.count} ${w.count===1?'time':'times'}, last on ${fmtDay(w.last)}`:h('span',{class:'muted'},'Not yet'); })()]].filter(Boolean);
-    return h('div',{class:'dinfo'},h('h2',{},it.name),h('div',{class:'cat'},`${c.label}, ${styleLabel(it).toLowerCase()}`),
+    return h('div',{class:'dinfo'},h('h2',{},it.name),h('div',{class:'cat'},it.category==='other'?`${catLabel(it)}, worn as ${(OTHER_SLOTS.find(x=>x[0]===(it.otherSlot||'acc'))||[0,'an accessory'])[1].toLowerCase()}`:`${catLabel(it)}, ${styleLabel(it).toLowerCase()}`),
       h('div',{class:'palette',title:'Colors found by the scanner'},(it.colors||[]).map(x=>h('span',{style:{background:x.hex,flex:String(Math.max(x.w,.08))},title:`${cap(colorWord(x.fam))} ${Math.round(x.w*100)}%`}))),
-      h('dl',{class:'facts'},facts.map(([k,v])=>[h('dt',{},k),h('dd',{},v)]),h('dt',{},'Mood'),h('dd',{},h('span',{class:'vchips'},vibesOf(it).map(v=>h('span',{class:'vchip'},VIBE_LABEL[v]))))),
+      h('dl',{class:'facts'},facts.map(([k,v])=>[h('dt',{},k),h('dd',{},v)]),h('dt',{},'Mood'),h('dd',{},h('span',{class:'vchips'},vibesOf(it).map(v=>h('span',{class:'vchip'},VIBE_LABEL[v])),(it.moodText||'').split(',').map(x=>x.trim()).filter(Boolean).map(x=>h('span',{class:'vchip'},x))))),
       it.notes?h('p',{style:{margin:'0 0 18px'}},it.notes):null,
       h('div',{class:'dactions'},
         h('button',{class:'btn primary',onclick:()=>{ styles=outfitsForItem(it); paint(); setTimeout(()=>m.modal.querySelector('#styles')?.scrollIntoView({behavior:'smooth',block:'start'}),40); }},icon('spark'),styles?'Show different styles':'Styles'),
         confirmDel?h('div',{class:'row'},h('span',{style:{fontSize:'14px',flex:'1'}},'Delete this piece for good?'),h('button',{class:'btn sm',onclick:()=>{confirmDel=false;paint();}},'Keep'),
-            h('button',{class:'btn sm danger',onclick:async()=>{ try{ await DB.del('items',it.id); await IMG.del(it.img); if(it.photo!==it.img) await IMG.del(it.photo); S.items=S.items.filter(x=>x!==it); m.close(); toast('Piece deleted'); }catch(e){ toast("Couldn't delete that piece."); } }},'Delete'))
+            h('button',{class:'btn sm danger',onclick:async()=>{ try{ await DB.del('items',it.id); await IMG.del(it.img); if(it.photo!==it.img) await IMG.del(it.photo); if(it.back&&it.back!==it.backPhoto) await IMG.del(it.back); if(it.backPhoto) await IMG.del(it.backPhoto); S.items=S.items.filter(x=>x!==it); m.close(); toast('Piece deleted'); }catch(e){ toast("Couldn't delete that piece."); } }},'Delete'))
           :h('div',{class:'row'},h('button',{class:'btn',onclick:()=>{editing=true;paint();}},'Edit details'),h('button',{class:'btn danger',onclick:()=>{confirmDel=true;paint();}},'Delete')),
         h('button',{class:'btn'+(it.laundry?' accent':''),onclick:async()=>{ await setLaundry(it,!it.laundry); toast(it.laundry?'Marked as in the laundry. Outfits will skip it.':'Back in the closet'); paint(); }},it.laundry?'Back in the closet':'Put in the laundry')));
   }
   function editForm(){
-    const f=clean(it); f.vibes=vibesOf(it).slice();
-    const subSel=h('select',{onchange:e=>{f.sub=e.target.value; const s=SUB[f.sub]; f.formality=s.f; f.warmth=s.w;}},CAT[f.category].subs.map(s=>h('option',{value:s.k,selected:f.sub===s.k},s.label)));
+    if(!draft){ draft=clean(it); draft.vibes=vibesOf(it).slice(); }
+    const f=draft;
     const seg=(key)=>h('span',{class:'seg'},[1,2,3,4,5].map(n=>h('button',{type:'button','aria-pressed':String(Math.round(f[key]??0)===n),onclick:e=>{ f[key]=n; [...e.currentTarget.parentNode.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i+1===n))); }},n)));
     const vibeChips=h('div',{class:'wrapchips'},VIBES.map(v=>h('button',{type:'button',class:'chip mini','aria-pressed':String(f.vibes.includes(v)),onclick:e=>{ const i=f.vibes.indexOf(v); if(i>=0) f.vibes.splice(i,1); else f.vibes.push(v); e.currentTarget.setAttribute('aria-pressed',String(i<0)); }},VIBE_LABEL[v])));
+    const setMain=c=>{ f.colors=[{...c,w:f.colors[0]?.w||1},...(f.colors||[]).slice(1)]; };
     return h('div',{class:'dinfo'},h('h2',{},'Edit details'),h('div',{style:{height:'16px'}}),
       h('div',{class:'pfields',style:{gridTemplateColumns:'1fr 1fr'}},
         h('label',{class:'field wide'},'Name',h('input',{value:f.name||'',oninput:e=>f.name=e.target.value})),
-        h('label',{class:'field'},'Type',h('select',{onchange:e=>{ f.category=e.target.value; f.sub=CAT[f.category].subs[0].k; subSel.replaceChildren(...CAT[f.category].subs.map(s=>h('option',{value:s.k},s.label))); }},CATS.map(x=>h('option',{value:x.k,selected:f.category===x.k},x.label)))),
-        h('label',{class:'field'},'Style',subSel),
-        h('label',{class:'field'},'Main color',h('select',{onchange:e=>{ const c=colorFromFam(e.target.value); f.colors=[{...c,w:f.colors[0]?.w||1},...(f.colors||[]).slice(1)]; }},COLORS.map(x=>h('option',{value:x.k,selected:pc(f).fam===x.k},cap(colorWord(x.k)))))),
-        h('label',{class:'field'},'Pattern',h('select',{onchange:e=>f.pattern=e.target.value},PATTERNS.map(x=>h('option',{value:x,selected:f.pattern===x},cap(x))))),
-        h('label',{class:'field'},'Fit',h('select',{onchange:e=>f.fit=e.target.value},FITS.map(x=>h('option',{value:x,selected:(f.fit||'regular')===x},cap(x))))),
+        h('label',{class:'field'},'Type',h('select',{onchange:e=>{ f.category=e.target.value; f.sub=CAT[f.category].subs[0].k; const st=SUB[f.sub]; f.formality=st.f; f.warmth=st.w; paint(); }},CATS.map(x=>h('option',{value:x.k,selected:f.category===x.k},x.label)))),
+        h('label',{class:'field'},'Style',h('select',{onchange:e=>{ f.sub=e.target.value; const st=SUB[f.sub]; f.formality=st.f; f.warmth=st.w; paint(); }},CAT[f.category].subs.map(x=>h('option',{value:x.k,selected:f.sub===x.k},x.label)))),
+        f.category==='other'?h('label',{class:'field'},'What is it?',h('input',{value:f.customType||'',placeholder:'e.g. Jumpsuit, kimono',oninput:e=>f.customType=e.target.value})):null,
+        f.category==='other'?h('label',{class:'field'},'Wear it as',h('select',{onchange:e=>f.otherSlot=e.target.value},OTHER_SLOTS.map(([k,l])=>h('option',{value:k,selected:(f.otherSlot||'acc')===k},l)))):null,
+        isOtherSub(f.sub)?h('label',{class:'field'},'Style name',h('input',{value:f.customStyle||'',placeholder:'e.g. Wrap skirt',oninput:e=>f.customStyle=e.target.value})):null,
+        h('div',{class:'field'},'Main color',h('div',{style:{display:'flex',gap:'8px',alignItems:'center'}},
+          h('select',{style:{flex:'1'},onchange:e=>setMain(colorFromFam(e.target.value))},COLORS.map(x=>h('option',{value:x.k,selected:pc(f).fam===x.k},cap(colorWord(x.k))))),
+          h('label',{class:'anycolor',title:'Something else: pick any color'},h('input',{type:'color',value:pc(f).hex,'aria-label':'Pick any other color',onchange:e=>setMain(colorFromHex(e.target.value))}),'Other'))),
+        h('label',{class:'field'},'Pattern',h('select',{onchange:e=>{ f.pattern=e.target.value; paint(); }},PATTERNS.map(x=>h('option',{value:x,selected:f.pattern===x},optLabel(x))))),
+        f.pattern==='other'?h('label',{class:'field'},'Pattern name',h('input',{value:f.patternLabel||'',placeholder:'e.g. Leopard, polka dot',oninput:e=>f.patternLabel=e.target.value})):null,
+        h('label',{class:'field'},'Fit',h('select',{onchange:e=>{ f.fit=e.target.value; paint(); }},FITS.map(x=>h('option',{value:x,selected:(f.fit||'regular')===x},optLabel(x))))),
+        f.fit==='other'?h('label',{class:'field'},'Fit name',h('input',{value:f.fitLabel||'',placeholder:'e.g. Cropped, boxy',oninput:e=>f.fitLabel=e.target.value})):null,
         h('label',{class:'field'},'Brand',h('input',{value:f.brand||'',oninput:e=>f.brand=e.target.value})),
         h('label',{class:'field'},'Material',h('input',{value:f.material||'',placeholder:'e.g. wool, suede, silk',oninput:e=>f.material=e.target.value})),
         h('label',{class:'field'},'Size',h('input',{value:f.size||'',oninput:e=>f.size=e.target.value})),
         h('div',{class:'field'},'Dressiness (1 casual, 5 formal)',seg('formality')),
         h('div',{class:'field'},'Warmth (1 light, 5 heavy)',seg('warmth')),
         h('div',{class:'field wide'},'Mood',vibeChips),
+        h('label',{class:'field wide'},'Something else (your own mood words, separated by commas)',h('input',{value:f.moodText||'',placeholder:'e.g. Parisian, 90s, cottagecore',oninput:e=>f.moodText=e.target.value})),
         h('label',{class:'toggle wide'},h('input',{type:'checkbox',checked:!!f.waterproof,onchange:e=>f.waterproof=e.target.checked}),'Good in the rain'),
+        h('label',{class:'toggle wide'},h('input',{type:'checkbox',checked:!!f.worn,onchange:e=>f.worn=e.target.checked}),'This is a photo of me wearing it (softens the edges of the cutout)'),
         h('label',{class:'field wide'},'Notes',h('textarea',{value:f.notes||'',oninput:e=>f.notes=e.target.value}))),
-      h('div',{class:'foot'},h('button',{class:'btn',onclick:()=>{editing=false;paint();}},'Cancel'),
+      h('div',{class:'foot'},h('button',{class:'btn',onclick:()=>{ editing=false; draft=null; paint(); }},'Cancel'),
         h('button',{class:'btn primary',onclick:async()=>{ const sameAsDefault=JSON.stringify(f.vibes.slice().sort())===JSON.stringify((SUB[f.sub]?.v||[]).slice().sort()); f.vibes=sameAsDefault?null:f.vibes; f.name=(f.name||'').trim()||it.name;
-          Object.assign(it,f); try{ await persist('items',it); toast('Changes saved'); }catch(e){} editing=false; paint(); }},'Save changes')));
+          Object.assign(it,f); try{ await persist('items',it); toast('Changes saved'); }catch(e){} editing=false; draft=null; settingsChanged(); paint(); }},'Save changes')));
   }
 }
 function needsMsg(){ return 'Add at least one top and one bottom (or a dress) to start getting outfits. Shoes and outerwear make them complete.'; }
@@ -1586,7 +1676,7 @@ function miniOutfit(o,anchorId,m){
 
 /* ---------- collage ---------- */
 function collage(o,{small=false,anchor=null,onPiece=null}={}){
-  const tile=id=>{ const it=I(id); if(!it) return null; const img=h('img',{src:IMG.url(it.img||it.photo),alt:it.name,class:it.cutout?'':'raw'});
+  const tile=id=>{ const it=I(id); if(!it) return null; const img=h('img',{src:IMG.url(it.img||it.photo),alt:it.name,class:it.cutout?(it.worn?'soft':''):'raw'});
     return onPiece?h('button',{class:'piece'+(anchor===id?' anchor':''),title:`Build an outfit around the ${it.name.toLowerCase()}`,'aria-label':`Build an outfit around the ${it.name.toLowerCase()}`,onclick:e=>{ if(e.currentTarget.closest('.ocard')?.dataset.dragged==='1') return; onPiece(id);}},img)
       :h('div',{class:'piece'+(anchor===id?' anchor':'')},img); };
   const outer=o.outer&&I(o.outer)?tile(o.outer):null;
@@ -1646,11 +1736,12 @@ function viewOutfits(){
       h('div',{class:'forecast'},h('span',{},fc?`High ${Math.round(fc.hi)}°, low ${Math.round(fc.lo)}°, ${Math.round(fc.pop)}% rain`:'Set it by hand or use your location.'),
         h('button',{class:'btn sm',onclick:()=>useLocationWeather(false),disabled:g.locating},icon('locate'),g.locating?'Checking…':(fc?'Refresh':'Use location'))),
       h('div',{class:'wrapchips'},CONDS.map(c=>h('button',{class:'chip','aria-pressed':String(g.cond===c.k),onclick:()=>{g.cond=c.k;settingsChanged();render();}},c.label))),
+      g.cond==='custom'?h('input',{class:'custom',placeholder:'e.g. Humid, foggy, drizzly, freezing',value:g.condText||'',oninput:e=>{g.condText=e.target.value;settingsChanged();}}):null,
       h('div',{class:'temprow'},tLabel,h('span',{class:'unit'},['F','C'].map(u=>h('button',{'aria-pressed':String(g.unit===u),onclick:()=>{g.unit=u;saveMeta();render();}},'°'+u)))),
       h('input',{type:'range',min:'14',max:'104',value:String(g.tempF),'aria-label':'Temperature',oninput:e=>{g.tempF=+e.target.value;tLabel.textContent=disp(g.tempF);settingsChanged();}})),
     h('label',{class:'toggle'},h('input',{type:'checkbox',checked:S.profileUse,onchange:e=>{S.profileUse=e.target.checked;saveMeta();settingsChanged();}}),h('span',{},h('b',{},'Style from my taste. '),'Leans toward your pins, outfit photos and what you wear most.')),
     h('button',{class:'btn primary',style:{height:'50px'},onclick:startGenerating},icon('spark'),g.current||g.selected?'Generate a new outfit':'Generate outfit'));
-  const summary=h('div',{class:'summary-bar'},h('span',{},`${resolveOcc().label==='Something else'?g.custom:resolveOcc().label}, ${g.cond}, ${disp(g.tempF)}`),h('button',{class:'btn sm',onclick:()=>{g.collapsed=false;render();}},'Change'));
+  const summary=h('div',{class:'summary-bar'},h('span',{},`${resolveOcc().label}, ${condLabel(g.cond,g.condText).toLowerCase()}, ${disp(g.tempF)}`),h('button',{class:'btn sm',onclick:()=>{g.collapsed=false;render();}},'Change'));
   v.append(h('div',{class:'gen'+(g.collapsed?' collapsed':'')},panel,h('div',{style:{display:'grid',gap:'16px',minWidth:0}},summary,stage())));
   return v;
 }
@@ -1700,23 +1791,32 @@ function nextOutfit(){
 function buildAround(id){ const g=S.gen; g.anchor=id; g.queue=[]; toast(`Building around your ${I(id).name.toLowerCase()}`); nextOutfit(); }
 function passOutfit(){
   const o=S.gen.current; let picked=false;
-  const pick=k=>{ picked=true; m.close(); applyFeedback(k,o); nextOutfit(); };
+  const pick=k=>{ if(k==='custom'){ showCustom(); return; } picked=true; m.close(); applyFeedback(k,o); nextOutfit(); };
+  const showCustom=()=>{ const inp=h('textarea',{placeholder:'e.g. Too dressy for class, and no boots please',style:{minHeight:'90px'}});
+    const go2=()=>{ const t=inp.value.trim(); if(!t){ inp.focus(); return; } picked=true; m.close(); applyFeedback(feedbackFromText(t),o); nextOutfit(); };
+    m.modal.querySelector('.fb-opts').replaceWith(h('div',{style:{display:'grid',gap:'12px'}},h('label',{class:'field'},'Tell the stylist in your own words',inp),
+      h('div',{style:{display:'flex',gap:'8px',justifyContent:'flex-end'}},h('button',{class:'btn',onclick:()=>{ picked=true; m.close(); applyFeedback('other',o); nextOutfit(); }},'Skip'),h('button',{class:'btn primary',onclick:go2},'Show the next outfit'))));
+    setTimeout(()=>inp.focus(),30); };
   const m=openModal(h('div',{},h('div',{class:'modal-head'},h('h2',{},'What should change?')),
     h('div',{class:'modal-body'},h('p',{class:'muted',style:{margin:'0 0 16px'}},'Your answer shapes the next outfit, and the stylist remembers it.'),
       h('div',{class:'fb-opts'},FEEDBACK.map(f=>h('button',{class:'btn',onclick:()=>pick(f.k)},f.label))))),{size:'narrow',onClose:()=>{ if(!picked&&S.gen.current===o){ applyFeedback('other',o); nextOutfit(); } }});
 }
 function applyFeedback(k,o){
-  const g=S.gen; if(g.current!==o) return; g.current=null;
-  for(const s of ['top','bottom','dress']) if(o[s]&&o[s]!==g.anchor) g.avoidItems.add(o[s]);
-  if(k==='casual') g.adj.form-=1; if(k==='formal') g.adj.form+=1;
-  if(k==='warmer'){ g.adj.warm+=1; g.adj.forceOuter=true; } if(k==='cooler'){ g.adj.warm-=1; g.adj.forceOuter=false; }
-  if(k==='occasion') g.adj.strict=true;
-  if(k==='color'){ ['top','bottom','dress','outer'].forEach(s=>{ const it=I(o[s]); if(it&&it.id!==g.anchor) g.avoidColors.add(pc(it).fam); }); learnFrom({top:o.top,bottom:o.bottom,dress:o.dress,outer:o.outer},-.6); }
-  else learnFrom({top:o.top,bottom:o.bottom,dress:o.dress},-.15);
-  if(k!=='other') g.queue=[];
+  const g=S.gen; if(g.current!==o) return; g.current=null; const ks=Array.isArray(k)?k:[k];
+  for(const sl of ['top','bottom','dress']) if(o[sl]&&o[sl]!==g.anchor) g.avoidItems.add(o[sl]);
+  for(const x of ks){
+    if(x==='casual') g.adj.form-=1; if(x==='formal') g.adj.form+=1;
+    if(x==='warmer'){ g.adj.warm+=1; g.adj.forceOuter=true; } if(x==='cooler'){ g.adj.warm-=1; g.adj.forceOuter=false; }
+    if(x==='occasion') g.adj.strict=true;
+    if(x==='no-shoes'&&o.shoes) g.avoidItems.add(o.shoes);
+    if(x==='no-outer'&&o.outer) g.avoidItems.add(o.outer);
+    if(x==='color') ['top','bottom','dress','outer'].forEach(sl=>{ const it=I(o[sl]); if(it&&it.id!==g.anchor) g.avoidColors.add(pc(it).fam); });
+  }
+  if(ks.includes('color')) learnFrom({top:o.top,bottom:o.bottom,dress:o.dress,outer:o.outer},-.6); else learnFrom({top:o.top,bottom:o.bottom,dress:o.dress},-.15);
+  if(!(ks.length===1&&ks[0]==='other')) g.queue=[];
 }
-function chooseOutfit(){ const g=S.gen, o=g.current; learnFrom(o,.5); g.selected={...o,accessories:[...(o.accessories||[])],occasion:resolveOcc().label==='Something else'?g.custom:resolveOcc().label,weather:`${cap(g.cond)}, ${disp(g.tempF)}`}; g.phase='selected'; g.tab='pieces'; render(); }
-function wearOutfit(o){ const g=S.gen; g.mode='today'; g.selected={...o,accessories:[...(o.accessories||[])],why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||`${cap(g.cond)}, ${disp(g.tempF)}`}; g.current=null; g.phase='selected'; g.tab='pieces'; S.view='outfits'; render(); }
+function chooseOutfit(){ const g=S.gen, o=g.current; learnFrom(o,.5); g.selected={...o,accessories:[...(o.accessories||[])],occasion:resolveOcc().label,weather:`${condLabel(g.cond,g.condText)}, ${disp(g.tempF)}`}; g.phase='selected'; g.tab='pieces'; render(); }
+function wearOutfit(o){ const g=S.gen; g.mode='today'; g.selected={...o,accessories:[...(o.accessories||[])],why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||`${condLabel(g.cond,g.condText)}, ${disp(g.tempF)}`}; g.current=null; g.phase='selected'; g.tab='pieces'; S.view='outfits'; render(); }
 function selectedView(){
   const g=S.gen, o=g.selected;
   const likeB=h('button',{class:'btn like-btn','aria-pressed':String(isLiked(o)),onclick:async()=>{ await toggleLike(o); render(); }},icon('heart'),isLiked(o)?'Liked':'Like');
@@ -1886,12 +1986,13 @@ function mannequin(o,{onPiece=null,anchor=null,small=false}={}){
   const fig=h('div',{class:'fig'}); fig.innerHTML=FIGURE_SVG;
   const place=(it,box,pos,z,stretch)=>{
     if(!it||!box) return; const [x,y,w,hh]=box;
-    const img=h('img',{src:IMG.url(it.img||it.photo),alt:it.name,class:it.cutout?'':'raw',style:{objectPosition:pos}});
+    const useBack=S.mqBack&&it.back, cut=useBack?it.backCutout:it.cutout;
+    const img=h('img',{src:IMG.url(useBack?it.back:(it.img||it.photo)),alt:it.name,class:cut?(it.worn?'soft':''):'raw',style:{objectPosition:pos}});
     const el=onPiece?h('button',{class:'mq'+(anchor===it.id?' anchor':''),title:`Build an outfit around the ${it.name.toLowerCase()}`,'aria-label':`Build an outfit around the ${it.name.toLowerCase()}`,onclick:e=>{ if(e.currentTarget.closest('.ocard')?.dataset.dragged==='1') return; onPiece(it.id); }},img)
       :h('div',{class:'mq'+(anchor===it.id?' anchor':'')},img);
     const set=(L,W)=>Object.assign(el.style,{left:L/240*100+'%',top:y/560*100+'%',width:W/240*100+'%',height:hh/560*100+'%',zIndex:String(z)});
     set(x,w); fig.append(el);
-    if(stretch&&it.cutout) img.addEventListener('load',()=>{ const r=img.naturalWidth/img.naturalHeight; if(!r) return; const natural=r*hh, W=Math.max(natural*.78,Math.min(natural,w*1.35)); set(x+w/2-W/2,W); el.classList.add('fill'); },{once:true});
+    if(stretch&&cut&&!it.worn) img.addEventListener('load',()=>{ const r=img.naturalWidth/img.naturalHeight; if(!r) return; const natural=r*hh, W=Math.max(natural*.78,Math.min(natural,w*1.35)); set(x+w/2-W/2,W); el.classList.add('fill'); },{once:true});
   };
   const g=k=>I(o[k]);
   place(g('bottom'),g('bottom')&&mqBox('bottom',g('bottom')),'top center',2,true);
@@ -1910,7 +2011,9 @@ function mannequin(o,{onPiece=null,anchor=null,small=false}={}){
   return h('div',{class:'manq'+(small?' small':'')},fig,extra.length?h('div',{class:'mq-extra'},extra.map(a=>h('span',{},h('img',{src:IMG.url(a.img||a.photo),alt:''}),a.name))):null);
 }
 function outfitVisual(o,opts={}){ return S.look==='mannequin'?mannequin(o,opts):collage(o,opts); }
-function lookSeg(){ return h('span',{class:'seg lookseg',role:'group','aria-label':'Outfit view'},[['collage','Collage'],['mannequin','Mannequin']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(S.look===k),onclick:()=>{ S.look=k; saveMeta(); render(); }},l))); }
+function lookSeg(){ const main=lookSegMain(); if(S.look!=='mannequin') return main;
+  return h('div',{class:'lookbar'},main,h('span',{class:'seg lookseg',role:'group','aria-label':'Mannequin side'},[[false,'Front'],[true,'Back']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(!!S.mqBack===k),onclick:()=>{ S.mqBack=k; render(); }},l)))); }
+function lookSegMain(){ return h('span',{class:'seg lookseg',role:'group','aria-label':'Outfit view'},[['collage','Collage'],['mannequin','Mannequin']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(S.look===k),onclick:()=>{ S.look=k; saveMeta(); render(); }},l))); }
 
 /* ---------- style learning from your photos, closet and what you wear ---------- */
 function buildProfile(){
@@ -2051,14 +2154,14 @@ function openOutfitPhoto(){
 }
 
 /* ---------- planner: week and trip ---------- */
-function weekDefaults(){ const t=todayISO(); return Array.from({length:7},(_,i)=>{ const date=isoAdd(t,i), dow=parseISO(date).getDay(); return {date,occ:(dow===0||dow===6)?'casual':'university',cond:S.gen.cond,tempF:S.gen.tempF,outfit:null,skip:false}; }); }
+function weekDefaults(){ const t=todayISO(); return Array.from({length:7},(_,i)=>{ const date=isoAdd(t,i), dow=parseISO(date).getDay(); return {date,occ:(dow===0||dow===6)?'casual':'university',cond:S.gen.cond,condText:S.gen.condText||'',tempF:S.gen.tempF,outfit:null,skip:false}; }); }
 function ensureWeek(){ const t=todayISO(); if(!S.plan||!S.plan.days||S.plan.days[0].date!==t){ const old=S.plan?.days||[]; const days=weekDefaults(); days.forEach(d=>{ const o=old.find(x=>x.date===d.date); if(o) Object.assign(d,o); }); S.plan={days}; } return S.plan; }
 function ensureTrip(){ if(!S.trip) S.trip={dest:'',place:'',start:isoAdd(todayISO(),7),days:4,dayList:[],packed:{}}; syncTripDays(); return S.trip; }
 function syncTripDays(){ const tr=S.trip; const old=tr.dayList||[]; tr.days=clamp(Math.round(+tr.days||1),1,14);
   tr.dayList=Array.from({length:tr.days},(_,i)=>{ const date=isoAdd(tr.start,i); return old.find(x=>x.date===date)||{date,occ:'casual',cond:'sunny',tempF:70,outfit:null,skip:false}; }); }
 function bumpUse(use,o){ for(const id of idsOf(o)) use.set(id,(use.get(id)||0)+1); }
-function planDay(day,use,trip,avoid){ const occ=OCC[day.occ]||OCC.casual; const r=generate(1,{occ,t:day.tempF,cond:day.cond,planUse:use,trip,fresh:true,ignoreSeen:true,avoid})[0];
-  if(r){ r.occasion=occ.label; r.weather=`${cap(day.cond)}, ${disp(day.tempF)}`; } return r||null; }
+function planDay(day,use,trip,avoid){ const occ=day.occ==='custom'?occFromText(day.custom):(OCC[day.occ]||OCC.casual); const r=generate(1,{occ,t:day.tempF,cond:day.cond,condText:day.condText||'',planUse:use,trip,fresh:true,ignoreSeen:true,avoid})[0];
+  if(r){ r.occasion=occ.label; r.weather=`${condLabel(day.cond,day.condText)}, ${disp(day.tempF)}`; } return r||null; }
 function generatePlan(days,trip){ const use=new Map(); for(const d of days){ if(d.skip){ d.outfit=null; continue; } d.outfit=planDay(d,use,trip); if(d.outfit) bumpUse(use,d.outfit); } saveMeta(); }
 function swapDay(days,i,trip){ const use=new Map(); days.forEach((d,j)=>{ if(j!==i&&d.outfit) bumpUse(use,d.outfit); }); const prev=days[i].outfit;
   const avoid=new Set(prev?[prev.top,prev.bottom,prev.dress].filter(Boolean):[]); days[i].outfit=planDay(days[i],use,trip,avoid)||prev; saveMeta(); }
@@ -2081,13 +2184,14 @@ async function tripForecast(){ const tr=ensureTrip(); if(!tr.dest.trim()){ toast
 const toUnit=f=>S.gen.unit==='F'?Math.round(f):Math.round((f-32)*5/9);
 const fromUnit=v=>S.gen.unit==='F'?v:Math.round(v*9/5+32);
 function dayCard(day,i,days,trip){
-  const occSel=h('select',{'aria-label':'Occasion',onchange:e=>{ day.occ=e.target.value; saveMeta(); }},OCCASIONS.filter(o=>o.k!=='custom').map(o=>h('option',{value:o.k,selected:day.occ===o.k},o.label)));
-  const condSel=h('select',{'aria-label':'Weather',onchange:e=>{ day.cond=e.target.value; saveMeta(); }},CONDS.map(c=>h('option',{value:c.k,selected:day.cond===c.k},c.label)));
+  const occSel=h('select',{'aria-label':'Occasion',onchange:e=>{ day.occ=e.target.value; saveMeta(); if(day.occ==='custom') render(); }},OCCASIONS.map(o=>h('option',{value:o.k,selected:day.occ===o.k},o.label)));
+  const condSel=h('select',{'aria-label':'Weather',onchange:e=>{ day.cond=e.target.value; saveMeta(); if(day.cond==='custom') render(); }},CONDS.map(c=>h('option',{value:c.k,selected:day.cond===c.k},c.label)));
   const temp=h('input',{type:'number','aria-label':'Temperature',value:String(toUnit(day.tempF)),onchange:e=>{ day.tempF=fromUnit(+e.target.value); saveMeta(); }});
   const isToday=day.date===todayISO();
   return h('div',{class:'day'+(day.skip?' off':'')},
     h('div',{class:'day-head'},h('b',{},isToday?'Today':fmtDay(day.date)),h('label',{class:'skip'},h('input',{type:'checkbox',checked:!day.skip,onchange:e=>{ day.skip=!e.target.checked; if(day.skip) day.outfit=null; saveMeta(); render(); }}),'Plan')),
-    h('div',{class:'day-fields'},occSel,h('div',{class:'day-wx'},condSel,temp,h('span',{},'°'+S.gen.unit))),
+    h('div',{class:'day-fields'},occSel,day.occ==='custom'?h('input',{placeholder:'Where to? e.g. Picnic',value:day.custom||'',onchange:e=>{ day.custom=e.target.value; saveMeta(); }}):null,
+      h('div',{class:'day-wx'},condSel,temp,h('span',{},'°'+S.gen.unit)),day.cond==='custom'?h('input',{placeholder:'e.g. Humid, foggy',value:day.condText||'',onchange:e=>{ day.condText=e.target.value; saveMeta(); }}):null),
     day.skip?h('div',{class:'day-empty'},'No outfit this day')
     :day.outfit?[h('button',{class:'day-look','aria-label':`Open ${day.outfit.title}`,onclick:()=>wearOutfit(day.outfit)},outfitVisual(day.outfit,{small:true})),h('div',{class:'day-title'},day.outfit.title),
       h('div',{class:'day-act'},h('button',{class:'btn sm',onclick:()=>{ swapDay(days,i,trip); render(); }},'Swap'),
