@@ -312,11 +312,11 @@ button.piece:hover::after{content:"";position:absolute;inset:0;border-radius:18p
 .ready{width:min(100%,calc((100dvh - 260px) * .72),460px);aspect-ratio:4/5.4;border-radius:999px 999px var(--r-lg) var(--r-lg);border:1px solid var(--gold);outline:1px solid var(--line);outline-offset:-10px;display:grid;place-items:center;text-align:center;padding:40px 30px 30px;background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .ready h2{font-style:italic;font-weight:500;font-size:36px;color:var(--accent-deep)}
 .summary-bar{display:none}
-.selected{width:100%;max-width:900px;display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:30px;align-items:start}
+.selected{width:100%;max-width:900px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;align-items:start}
 .sel-col{display:grid;gap:12px}
 .sel-col.info-col{padding:24px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .tabs{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--pill);margin:10px 0 14px;justify-self:start}
-.tabs button{border:0;background:none;padding:6px 18px;font-weight:500;color:var(--muted);border-radius:var(--pill);font-size:14px}
+.tabs button{border:0;background:none;padding:6px 16px;font-weight:500;color:var(--muted);border-radius:var(--pill);font-size:14px;white-space:nowrap}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
 .plist{display:grid;gap:8px}
 .prow2{display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;padding:6px;border-radius:18px;background:var(--surface);border:1px solid var(--line);text-align:left;width:100%;transition:border-color .15s}
@@ -394,30 +394,12 @@ button.piece:hover::after{content:"";position:absolute;inset:0;border-radius:18p
 .card .tile{box-shadow:0 1px 2px rgba(45,35,30,.05),0 14px 26px -18px rgba(45,35,30,.4),inset 0 0 0 5px rgba(255,255,255,.55)}
 .search input,select.pill{background:var(--surface)}
 .nudge{background:linear-gradient(100deg,var(--accent-soft),var(--surface) 55%)}
-/* ---------- mannequin ---------- */
-.manq{aspect-ratio:4/5;width:100%;border-radius:18px;background:radial-gradient(110% 80% at 50% 30%,var(--tile-hi),var(--tile) 78%);display:grid;place-items:center;position:relative;overflow:hidden}
-.fig{position:relative;height:95%;aspect-ratio:240/560}
-.fig svg{position:absolute;inset:0;width:100%;height:100%}
-.fig .body{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.1}
-.fig .stand{fill:var(--line-strong)}
-.mq{position:absolute;border:0;padding:0;background:none;display:block}
-.mq img{width:100%;height:100%;object-fit:contain;filter:var(--drop);display:block;pointer-events:none}
-.mq.fill img{object-fit:fill}
-.mq img.raw{border-radius:10px;filter:none;object-fit:cover}
-.mq.anchor img{filter:var(--drop) drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 1px var(--accent))}
-button.mq:hover img{filter:var(--drop) drop-shadow(0 0 6px var(--accent-2))}
-button.mq:focus-visible{outline:none}
-button.mq:focus-visible img{filter:var(--drop) drop-shadow(0 0 6px var(--accent))}
-img.soft{-webkit-mask-image:radial-gradient(ellipse 52% 54% at 50% 50%,#000 64%,transparent 100%);mask-image:radial-gradient(ellipse 52% 54% at 50% 50%,#000 64%,transparent 100%)}
-.lookbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.side-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-.back-chip{font-size:12px;color:var(--ok);font-weight:600}
-.mq-extra{position:absolute;left:8px;bottom:8px;display:grid;gap:4px;z-index:20}
-.mq-extra span{display:flex;align-items:center;gap:6px;font-size:11.5px;background:var(--surface);border-radius:999px;padding:2px 9px 2px 2px;border:1px solid var(--line)}
-.mq-extra img{width:20px;height:20px;border-radius:50%;object-fit:contain;background:var(--tile)}
-.manq.small .mq-extra{display:none}
-.lookseg{justify-self:center}
-.lookseg button{padding:0 14px;font-size:13px}
+/* ---------- finish the look ---------- */
+.finish{display:grid;gap:22px}
+.finish-sec h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:22px;margin:0 0 2px}
+.fs-hint{margin:0 0 10px;color:var(--muted);font-size:13.5px}
+.none-tile{display:grid;place-items:center;color:var(--muted);background:var(--bg)!important;box-shadow:none!important}
+.none-tile svg{width:16px;height:16px}
 /* ---------- laundry ---------- */
 .card.laundry .tile img{opacity:.4;filter:grayscale(.5)}
 .lbadge{position:absolute;top:16%;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--accent-deep);font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 11px;border:1px solid var(--line-strong);white-space:nowrap;z-index:1}
@@ -798,12 +780,14 @@ async function jpegOf(src,max){ const W=src.width,H=src.height,s=Math.min(1,max/
 /* Step 1: read the photo into Lab colors at a small analysis size */
 async function prepScan(src){
   const bmp=await loadBitmap(src); const photo=await jpegOf(bmp,1400);
-  const A=200, s=A/Math.max(bmp.width,bmp.height), W=Math.max(8,Math.round(bmp.width*s)), H=Math.max(8,Math.round(bmp.height*s));
+  const A=300, s=A/Math.max(bmp.width,bmp.height), W=Math.max(8,Math.round(bmp.width*s)), H=Math.max(8,Math.round(bmp.height*s));
   const ac=canvasOf(W,H), ax=ac.getContext('2d',{willReadFrequently:true}); ax.fillStyle='#fff'; ax.fillRect(0,0,W,H); ax.drawImage(bmp,0,0,W,H);
   const px=ax.getImageData(0,0,W,H).data, N=W*H;
   const Lc=new Float32Array(N),Ac=new Float32Array(N),Bc=new Float32Array(N);
+  const gains=wbGains(px,W,H);   /* true colors: correct a yellow or dim white surface */
+  if(gains) for(let i=0;i<N;i++){ px[i*4]*=gains[0]; px[i*4+1]*=gains[1]; px[i*4+2]*=gains[2]; }
   for(let i=0;i<N;i++){ const [L,a,b]=rgbToLab(px[i*4],px[i*4+1],px[i*4+2]); Lc[i]=L;Ac[i]=a;Bc[i]=b; }
-  return {bmp,photo,W,H,N,s,Lc,Ac,Bc};
+  return {bmp,photo,W,H,N,s,Lc,Ac,Bc,gains};
 }
 const nbrs=(i,W,H)=>{ const x=i%W, y=(i/W)|0; return [x>0?i-1:-1,x<W-1?i+1:-1,y>0?i-W:-1,y<H-1?i+W:-1]; };
 /* Step 2a: plain backgrounds. Flood fill from the edges and remove everything that matches the background */
@@ -859,10 +843,10 @@ function growMask(P,seeds,tol){
 }
 /* Step 3: clean the mask, then read colors, pattern and shape, and make the cutout */
 async function finishScan(P,fg0){
-  const {bmp,photo,W,H,N,s,Lc,Ac,Bc}=P; const q=new Int32Array(N); let qh=0,qt=0;
+  const {bmp,photo,W,H,N,s,Lc,Ac,Bc,gains}=P; const q=new Int32Array(N); let qh=0,qt=0;
   let fg=fg0?fg0.slice():new Uint8Array(N);
   const morph=(m,grow)=>{ const b=new Uint8Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x, n=[m[i],x>0?m[i-1]:m[i],x<W-1?m[i+1]:m[i],y>0?m[i-W]:m[i],y<H-1?m[i+W]:m[i]]; b[i]=grow?(n.some(v=>v)?1:0):(n.every(v=>v)?1:0); } return b; };
-  for(let k=0;k<3;k++) fg=morph(fg,true); for(let k=0;k<3;k++) fg=morph(fg,false);   // closing: fills light stripes and small gaps inside the piece
+  const cr=Math.max(3,Math.round(Math.max(W,H)/60)); for(let k=0;k<cr;k++) fg=morph(fg,true); for(let k=0;k<cr;k++) fg=morph(fg,false);   // closing: fills light stripes and small gaps inside the piece
   const er=new Uint8Array(N); for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){ const i=y*W+x; er[i]=fg[i]&&fg[i-1]&&fg[i+1]&&fg[i-W]&&fg[i+W]?1:0; } fg=er;
   const lab=new Int32Array(N).fill(-1), comps=[];
   for(let i=0;i<N;i++){ if(!fg[i]||lab[i]>=0) continue; const id=comps.length; let area=0,sx=0,sy=0; qh=0;qt=0; q[qt++]=i; lab[i]=id;
@@ -908,17 +892,18 @@ async function finishScan(P,fg0){
     legs:band(.62,.98,r=>r.runs>=2&&r.gapMid?1:0),three:band(.3,.65,r=>r.runs>=3?1:0),handle:band(0,.22,r=>r.runs>=2?1:0),blobs:kept.length,cutout,
     pair:kept.length===2&&kept[1].area>kept[0].area*.45&&Math.abs(kept[0].cy-kept[1].cy)<H*.25};
   const guess=guessType(F,colors,pattern,edge);
-  /* cutout image with a transparent background */
+  /* cutout image with a transparent background, then polished */
   let display=null;
   if(cutout){
-    const D=Math.min(900,Math.max(bmp.width,bmp.height)), sc2=D/Math.max(bmp.width,bmp.height), OW=Math.round(bmp.width*sc2), OH=Math.round(bmp.height*sc2);
+    let mk=mask; for(let k=0;k<2;k++){ const nb=new Uint8Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ let c=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const xx=x+dx, yy=y+dy; if(xx>=0&&yy>=0&&xx<W&&yy<H&&mk[yy*W+xx]) c++; } nb[y*W+x]=c>=5?1:0; } mk=nb; }
+    const soft=new Float32Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ let t=0,c=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const xx=x+dx, yy=y+dy; if(xx>=0&&yy>=0&&xx<W&&yy<H){ t+=mk[yy*W+xx]; c++; } } soft[y*W+x]=t/c; }
+    const D=Math.min(1100,Math.max(bmp.width,bmp.height)), sc2=D/Math.max(bmp.width,bmp.height), OW=Math.round(bmp.width*sc2), OH=Math.round(bmp.height*sc2);
+    const oc=canvasOf(OW,OH), ox=oc.getContext('2d',{willReadFrequently:true}); ox.drawImage(bmp,0,0,OW,OH);
     const mc=canvasOf(W,H), mx=mc.getContext('2d'), md=mx.createImageData(W,H);
-    for(let i=0;i<N;i++){ md.data[i*4]=md.data[i*4+1]=md.data[i*4+2]=255; md.data[i*4+3]=mask[i]?255:0; } mx.putImageData(md,0,0);
-    const oc=canvasOf(OW,OH), ox=oc.getContext('2d'); ox.drawImage(bmp,0,0,OW,OH); ox.globalCompositeOperation='destination-in'; ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high';
-    if('filter' in ox) ox.filter='blur('+(sc2/s*.5).toFixed(2)+'px)'; ox.drawImage(mc,0,0,OW,OH);
-    const k=OW/W, pad=Math.round(8*k), cx0=Math.max(0,Math.floor(bx0*k)-pad), cy0=Math.max(0,Math.floor(by0*k)-pad), cw=Math.min(OW-cx0,Math.ceil(bw*k)+pad*2), ch=Math.min(OH-cy0,Math.ceil(bh*k)+pad*2);
-    const fc=canvasOf(cw,ch); fc.getContext('2d').drawImage(oc,cx0,cy0,cw,ch,0,0,cw,ch);
-    display=await toBlob(fc,'image/webp',.9); if(!display||display.type!=='image/webp') display=await toBlob(fc,'image/png');
+    for(let i=0;i<N;i++){ md.data[i*4]=md.data[i*4+1]=md.data[i*4+2]=255; md.data[i*4+3]=Math.round(soft[i]*255); } mx.putImageData(md,0,0);
+    const am=canvasOf(OW,OH), amx=am.getContext('2d',{willReadFrequently:true}); amx.imageSmoothingEnabled=true; amx.imageSmoothingQuality='high'; amx.drawImage(mc,0,0,OW,OH);
+    const A=amx.getImageData(0,0,OW,OH).data, im=ox.getImageData(0,0,OW,OH); for(let i=3;i<im.data.length;i+=4) im.data[i]=A[i]; ox.putImageData(im,0,0);
+    display=await canvasBlob(polishCanvas(oc,{gains,smooth:true}));
   }
   return {photo,display,cutout,colors:colors.length?colors:[colorFromFam('gray')],pattern,edge:+edge.toFixed(1),shape:F,guess};
 }
@@ -956,6 +941,76 @@ async function openCutoutFixer(src,onDone){
       h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',margin:'14px 0'}},undoBtn,h('button',{class:'btn sm',onclick:()=>{ seeds=[]; regrow(); }},'Start over')),
       h('div',{class:'foot',style:{borderTop:'1px solid var(--line)'}},h('button',{class:'btn',onclick:()=>{ m.close(); onDone({cutout:false}); }},'Use the whole photo'),saveBtn))));
   draw();
+}
+/* ---------- photo polish (no AI): true colors, smooth edges, straight, evenly framed ---------- */
+/* White balance and exposure from the plain surface the piece was photographed on */
+function wbGains(px,W,H){
+  const idx=[]; for(let x=0;x<W;x++){ idx.push(x,(H-1)*W+x); } for(let y=1;y<H-1;y++){ idx.push(y*W,y*W+W-1); }
+  const med=k=>{ const a=idx.map(i=>px[i*4+k]).sort((p,q)=>p-q); return a[a.length>>1]; };
+  const r=Math.max(1,med(0)),g=Math.max(1,med(1)),b=Math.max(1,med(2)); const lab=rgbToLab(r,g,b); const C=Math.hypot(lab[1],lab[2]);
+  let sp=0; for(const i of idx){ const L=rgbToLab(px[i*4],px[i*4+1],px[i*4+2]); sp+=(L[0]-lab[0])**2+(L[1]-lab[1])**2+(L[2]-lab[2])**2; } sp=Math.sqrt(sp/idx.length);
+  if(sp>12||C>20||lab[0]<55) return null;              // only light, near-white surfaces (walls, sheets): wood, carpet or busy rooms are left alone
+  const m=(r+g+b)/3; let gains=[m/r,m/g,m/b].map(x=>clamp(1+(x-1)*.7,.82,1.22));
+  if(lab[0]>55&&lab[0]<88){ const e=clamp(86/lab[0],1,1.22); gains=gains.map(x=>x*e); }   // a dim white surface: brighten it back to white
+  return gains.map(x=>clamp(x,.8,1.38));
+}
+/* Takes a canvas with a transparent background and returns a polished, straightened, evenly framed copy */
+function polishCanvas(src,{gains=null,smooth=true}={}){
+  const W=src.width,H=src.height, sx=src.getContext('2d',{willReadFrequently:true}); const im=sx.getImageData(0,0,W,H), d=im.data, N=W*H;
+  if(gains) for(let i=0;i<d.length;i+=4){ d[i]*=gains[0]; d[i+1]*=gains[1]; d[i+2]*=gains[2]; }
+  if(smooth){ /* smooth jagged edges: blur the outline, then firm it up with a soft curve */
+    const r=Math.max(1,Math.round(Math.max(W,H)/320)); const a=new Float32Array(N), t=new Float32Array(N);
+    for(let i=0;i<N;i++) a[i]=d[i*4+3]/255;
+    for(let y=0;y<H;y++){ let s=0,c=0; for(let x=-r;x<=r;x++) if(x>=0&&x<W){ s+=a[y*W+x]; c++; }
+      for(let x=0;x<W;x++){ t[y*W+x]=s/c; const xo=x-r, xi=x+r+1; if(xo>=0){ s-=a[y*W+xo]; c--; } if(xi<W){ s+=a[y*W+xi]; c++; } } }
+    for(let x=0;x<W;x++){ let s=0,c=0; for(let y=-r;y<=r;y++) if(y>=0&&y<H){ s+=t[y*W+x]; c++; }
+      for(let y=0;y<H;y++){ a[y*W+x]=s/c; const yo=y-r, yi=y+r+1; if(yo>=0){ s-=t[yo*W+x]; c--; } if(yi<H){ s+=t[yi*W+x]; c++; } } }
+    for(let i=0;i<N;i++){ let v=(a[i]-.25)/.5; v=v<0?0:v>1?1:v; d[i*4+3]=Math.round(v*v*(3-2*v)*255); }
+  }
+  /* straighten: find the piece's main axis and correct a small tilt */
+  let n=0,mx=0,my=0; for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>128){ n++; mx+=x; my+=y; }
+  let dev=0;
+  if(n>50){ mx/=n; my/=n; let m20=0,m02=0,m11=0; for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2) if(d[(y*W+x)*4+3]>128){ const dx=x-mx, dy=y-my; m20+=dx*dx; m02+=dy*dy; m11+=dx*dy; }
+    const th=.5*Math.atan2(2*m11,m20-m02), tr=m20+m02, det=m20*m02-m11*m11, l1=tr/2+Math.sqrt(Math.max(0,tr*tr/4-det)), l2=tr/2-Math.sqrt(Math.max(0,tr*tr/4-det));
+    if(l2>0&&l1/l2>1.35){ const tall=Math.abs(Math.abs(th)-Math.PI/2)<Math.PI/4; dev=tall?th-(th>0?Math.PI/2:-Math.PI/2):th; }
+    const deg=Math.abs(dev*180/Math.PI); if(deg<2||deg>12) dev=0; }
+  sx.putImageData(im,0,0);
+  let work=src, WW=W, HH=H;
+  if(dev){ const D=Math.ceil(Math.hypot(W,H)); const rc=canvasOf(D,D), rx=rc.getContext('2d'); rx.imageSmoothingQuality='high'; rx.translate(D/2,D/2); rx.rotate(-dev); rx.drawImage(src,-mx,-my); work=rc; WW=D; HH=D; }
+  /* frame it: tight crop with even padding, consistent size */
+  const wd=work.getContext('2d',{willReadFrequently:true}).getImageData(0,0,WW,HH).data; let x0=WW,x1=-1,y0=HH,y1=-1;
+  for(let y=0;y<HH;y+=2) for(let x=0;x<WW;x+=2) if(wd[(y*WW+x)*4+3]>24){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+  if(x1<0) return src;
+  x0=Math.max(0,x0-2); y0=Math.max(0,y0-2); x1=Math.min(WW-1,x1+2); y1=Math.min(HH-1,y1+2);
+  const bw=x1-x0+1, bh=y1-y0+1, pad=Math.round(Math.max(bw,bh)*.05), sc=Math.min(1,820/(Math.max(bw,bh)+pad*2));
+  const out=canvasOf((bw+pad*2)*sc,(bh+pad*2)*sc), ox=out.getContext('2d'); ox.imageSmoothingQuality='high';
+  ox.drawImage(work,x0,y0,bw,bh,pad*sc,pad*sc,bw*sc,bh*sc);
+  return out;
+}
+async function canvasBlob(c){ let b=await toBlob(c,'image/webp',.9); if(!b||b.type!=='image/webp') b=await toBlob(c,'image/png'); return b; }
+function colorsFromCanvas(c){
+  const W=c.width,H=c.height, d=c.getContext('2d',{willReadFrequently:true}).getImageData(0,0,W,H).data; const st=Math.max(1,Math.floor(Math.sqrt(W*H/4000))); const pts=[];
+  for(let y=0;y<H;y+=st) for(let x=0;x<W;x+=st){ const i=(y*W+x)*4; if(d[i+3]<200) continue; const [L,a,b]=rgbToLab(d[i],d[i+1],d[i+2]); pts.push([L,a,b,1]); }
+  return pts.length>30?mergeClusters(kmeans(pts,6),12,.05).slice(0,4):[];
+}
+/* Polish pieces that were added before this feature existed (keeps any cutout you fixed by hand) */
+async function polishImage(cutId,photoId){
+  const cb=await DB.get('images',cutId); if(!cb) return null; const bm=await loadBitmap(cb); const c=canvasOf(bm.width,bm.height); c.getContext('2d').drawImage(bm,0,0);
+  let gains=null; const pb=photoId?await DB.get('images',photoId):null;
+  if(pb){ const pbm=await loadBitmap(pb); const s=140/Math.max(pbm.width,pbm.height), w=Math.max(8,Math.round(pbm.width*s)), hh=Math.max(8,Math.round(pbm.height*s)); const t=canvasOf(w,hh), tx=t.getContext('2d',{willReadFrequently:true}); tx.drawImage(pbm,0,0,w,hh); gains=wbGains(tx.getImageData(0,0,w,hh).data,w,hh); }
+  const out=polishCanvas(c,{gains,smooth:true}); return {blob:await canvasBlob(out),canvas:out};
+}
+async function polishCloset(btn){
+  const items=S.items.filter(i=>!i.polished&&i.cutout&&i.img&&i.img!==i.photo); if(!items.length){ toast('All your photos are already polished'); return; }
+  if(btn){ btn.disabled=true; } let n=0;
+  for(const it of items){
+    if(btn) btn.textContent=`Polishing ${n+1} of ${items.length}…`;
+    try{ const r=await polishImage(it.img,it.photo); if(!r) continue; const id=await IMG.put(r.blob); await IMG.del(it.img); it.img=id;
+      const cols=colorsFromCanvas(r.canvas); if(cols.length) it.colors=cols;
+      if(it.back&&it.backCutout&&it.back!==it.backPhoto){ const rb=await polishImage(it.back,it.backPhoto); if(rb){ const bid=await IMG.put(rb.blob); await IMG.del(it.back); it.back=bid; } }
+      it.polished=true; await persist('items',it); n++; }catch(e){ console.warn(e); }
+  }
+  toast(`Polished ${n} ${n===1?'piece':'pieces'}`); document.querySelector('.back')?.remove(); render();
 }
 /* Turns shape + color clues into a best guess at type and style */
 function guessType(F,colors,pattern,edge){
@@ -1060,7 +1115,7 @@ const fitLabel=it=>it.fit==='other'?(it.fitLabel||'Something else'):cap(it.fit||
 /* =====================================================================
    7. STYLIST ENGINE — scores every combination with styling rules
    ===================================================================== */
-const MAIN_SLOTS=['outer','top','dress','bottom','shoes'];
+const MAIN_SLOTS=['outer','sweater','top','dress','bottom','shoes'];
 function piecesOf(o){ return MAIN_SLOTS.filter(k=>o[k]&&I(o[k])).map(k=>({slot:k,it:I(o[k])})); }
 function comboKey(o){ return [o.top,o.bottom,o.dress,o.outer,o.shoes].filter(Boolean).sort().join('+'); }
 function requiredWarmth(t){ return t>=82?1.1:t>=74?1.7:t>=66?2.4:t>=58?3.2:t>=48?4:t>=38?4.8:5.6; }
@@ -1197,7 +1252,7 @@ function formulaScore(P,ctx,why){
   return s;
 }
 function outfitWarmth(o){ const top=I(o.top),bot=I(o.bottom),dr=I(o.dress),ou=I(o.outer);
-  let b=dr?wOf(dr):(top&&bot?wOf(top)*.6+wOf(bot)*.5:1); if(ou) b+=wOf(ou)*.6; return b; }
+  let b=dr?wOf(dr):(top&&bot?wOf(top)*.6+wOf(bot)*.5:1); if(ou) b+=wOf(ou)*.6; const sw=I(o.sweater); if(sw) b+=wOf(sw)*.45; return b; }
 function weatherScore(o,ctx,why,tips){
   const eff=outfitWarmth(o), R=ctx.R; let s=-Math.abs(eff-R)*.7; if(eff<R-1) s-=(R-1-eff)*1.2;
   const ou=I(o.outer), sh=I(o.shoes);
@@ -1547,7 +1602,7 @@ function openUpload(){
         const it={id:uid(),img,photo,cutout:!!p.display,category:p.category,sub:p.sub,name:(p.name||'').trim()||makeName(p),brand:(p.brand||'').trim(),material:'',size:'',notes:'',
           colors:cols,pattern:p.pattern,fit:p.fit||'regular',vibes:null,customType:p.category==='other'?(p.customType||'').trim():undefined,otherSlot:p.category==='other'?(p.otherSlot||'acc'):undefined,
           customStyle:isOtherSub(p.sub)?(p.customStyle||'').trim():undefined,patternLabel:p.pattern==='other'?(p.patternLabel||'').trim():undefined,fitLabel:p.fit==='other'?(p.fitLabel||'').trim():undefined,formality:+clamp(f,.5,5).toFixed(1),warmth:sub.w,waterproof:sub.x.includes('waterproof'),createdAt:Date.now()+n,shape:p.shape};
-        it.worn=!!p.worn;
+        it.worn=!!p.worn; it.polished=true;
         if(p.backFile){ try{ const rb=await scanGarment(p.backFile); it.backPhoto=await IMG.put(rb.photo); it.back=rb.display?await IMG.put(rb.display):it.backPhoto; it.backCutout=!!rb.display; }catch(e){ console.warn(e); toast(`Couldn't read the back photo for ${it.name}.`); } }
         await persist('items',it); S.items.push(it); n++;
       }catch(e){ console.warn(e); break; }
@@ -1590,7 +1645,7 @@ function openDetail(it){
           view='back';
         } else {
           if(r.cutout===false){ if(it.img!==it.photo) await IMG.del(it.img); it.img=it.photo; it.cutout=false; }
-          else { const id=await IMG.put(r.display); if(it.img!==it.photo) await IMG.del(it.img); it.img=id; it.cutout=true; it.colors=r.colors; it.pattern=r.pattern; it.shape=r.shape; }
+          else { const id=await IMG.put(r.display); if(it.img!==it.photo) await IMG.del(it.img); it.img=id; it.cutout=true; it.colors=r.colors; it.pattern=r.pattern; it.shape=r.shape; it.polished=true; }
           view='product';
         }
         await persist('items',it); paint(); toast(r.cutout===false?'Using your whole photo':back?'Back cutout updated':'Cutout updated, and the colors were read again');
@@ -1679,7 +1734,7 @@ function collage(o,{small=false,anchor=null,onPiece=null}={}){
   const tile=id=>{ const it=I(id); if(!it) return null; const img=h('img',{src:IMG.url(it.img||it.photo),alt:it.name,class:it.cutout?(it.worn?'soft':''):'raw'});
     return onPiece?h('button',{class:'piece'+(anchor===id?' anchor':''),title:`Build an outfit around the ${it.name.toLowerCase()}`,'aria-label':`Build an outfit around the ${it.name.toLowerCase()}`,onclick:e=>{ if(e.currentTarget.closest('.ocard')?.dataset.dragged==='1') return; onPiece(id);}},img)
       :h('div',{class:'piece'+(anchor===id?' anchor':'')},img); };
-  const outer=o.outer&&I(o.outer)?tile(o.outer):null;
+  const layers=[o.outer,o.sweater].filter(id=>id&&I(id)).map(tile); const outer=layers.length?layers:null;
   const main=o.dress&&I(o.dress)?[tile(o.dress)]:[tile(o.top),tile(o.bottom)].filter(Boolean);
   const side=[...(o.accessories||[]).filter(I).slice(0,3).map(tile),tile(o.shoes)].filter(Boolean);
   const cols=[],tmpl=[];
@@ -1758,7 +1813,7 @@ function stage(){
   const card=h('div',{class:'ocard',tabindex:'0','aria-label':`${o.title}. Right arrow to wear, left arrow to pass.`},yes,no,
     outfitVisual(o,{anchor:g.anchor,onPiece:buildAround}),
     h('div',{class:'info'},h('h2',{},o.title),o.why.length?h('ul',{class:'why'},o.why.slice(0,2).map(t=>h('li',{},t))):null));
-  st.append(lookSeg()); dragify(card,yes,no); st.append(card);
+  dragify(card,yes,no); st.append(card);
   if(g.anchor&&I(g.anchor)){ const a=I(g.anchor); st.append(h('span',{class:'anchor-chip'},h('img',{src:IMG.url(a.img),alt:''}),`Built around your ${a.name.toLowerCase()}`,h('button',{'aria-label':'Stop building around this piece',onclick:()=>{g.anchor=null;g.queue=[];toast('Back to full outfits');}},icon('x')))); }
   st.append(h('div',{class:'swipe-actions'},h('button',{class:'round no','aria-label':'Pass on this outfit',onclick:()=>fling(card,-1)},icon('x')),h('button',{class:'round yes','aria-label':'Wear this outfit',onclick:()=>fling(card,1)},icon('check'))));
   st.append(h('p',{class:'swipe-hint'},'Swipe or use the arrow keys. Tap a piece you love to build a new outfit around it.'));
@@ -1820,43 +1875,69 @@ function wearOutfit(o){ const g=S.gen; g.mode='today'; g.selected={...o,accessor
 function selectedView(){
   const g=S.gen, o=g.selected;
   const likeB=h('button',{class:'btn like-btn','aria-pressed':String(isLiked(o)),onclick:async()=>{ await toggleLike(o); render(); }},icon('heart'),isLiked(o)?'Liked':'Like');
-  const left=h('div',{class:'sel-col'},lookSeg(),h('div',{class:'ocard',style:{width:'100%'}},outfitVisual(o,{})),
+  const left=h('div',{class:'sel-col'},h('div',{class:'ocard',style:{width:'100%'}},outfitVisual(o,{})),
     h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},h('button',{class:'btn primary',onclick:()=>logWear(o)},icon('check'),'Wore this today'),likeB,h('button',{class:'btn',onclick:()=>{ g.selected=null; if(g.current){ g.phase='card'; render(); } else nextOutfit(); }},icon('back'),'Keep browsing')));
-  const tabs=h('div',{class:'tabs',role:'tablist'},[['pieces','Pieces'],['acc','Accessories']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(g.tab===k),onclick:()=>{g.tab=k;render();}},l)));
+  const tabs=h('div',{class:'tabs',role:'tablist'},[['pieces','Pieces'],['acc','Finish the look']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(g.tab===k),onclick:()=>{g.tab=k;render();}},l)));
   let body;
-  if(g.tab==='pieces'){ const rows=[['outer','Layer'],['top','Top'],['dress','Dress'],['bottom','Bottom'],['shoes','Shoes']].filter(([k])=>o[k]&&I(o[k])).map(([k,l])=>pieceRow(I(o[k]),l));
+  if(g.tab==='pieces'){ const rows=[['outer','Jacket'],['sweater','Sweater'],['top','Top'],['dress','Dress'],['bottom','Bottom'],['shoes','Shoes']].filter(([k])=>o[k]&&I(o[k])).map(([k,l])=>pieceRow(I(o[k]),l));
     (o.accessories||[]).map(I).filter(Boolean).forEach(it=>rows.push(pieceRow(it,'Accessory'))); body=h('div',{class:'plist'},rows); }
-  else body=accessoriesTab(o);
+  else body=finishTab(o);
   const right=h('div',{class:'sel-col info-col'},h('div',{},h('h1',{class:'title',style:{fontSize:'46px'}},o.title),h('p',{class:'muted',style:{margin:'10px 0 0'}},`${o.occasion}. ${o.weather}.`),
       (o.why||[]).length?h('ul',{class:'why',style:{marginTop:'12px',fontSize:'14.5px'}},o.why.map(t=>h('li',{},t))):null,
       (o.tips||[]).length?h('div',{class:'tips'},o.tips.join(' ')):null),tabs,body);
   return h('div',{class:'selected'},left,right);
 }
 function pieceRow(it,label){ return h('button',{class:'prow2',onclick:()=>openDetail(it)},h('div',{class:'tile'},tileImg(it)),h('div',{},h('div',{class:'nm'},it.name),h('div',{class:'sub'},`${label}, ${colorWord(pc(it).fam)}${it.brand?', '+it.brand:''}`)),h('span',{})); }
-function accessoriesTab(o){
-  const accs=S.items.filter(i=>slotOf(i)==='acc');
-  if(!accs.length) return h('p',{class:'muted'},'Add bags, jewelry, hats, belts, scarves or sunglasses to your closet and they will be ranked here for this outfit, occasion and weather.');
-  const ctx=makeCtx(); const base={...o,accessories:[]};
+const KNITS=new Set(['sweater','turtleneck','sweatshirt','hoodie','knit-vest']);
+function finishTab(o){
+  const ctx=makeCtx(), P=piecesOf(o);
+  const changed=()=>{ if(isLiked(o)) persistLike(o); render(); };
+  const row=(it,on,sub,onclick)=>h('button',{class:'prow2'+(on?' on':''),'aria-pressed':String(on),onclick},h('div',{class:'tile'},tileImg(it)),
+    h('div',{},h('div',{class:'nm'},it.name),h('div',{class:'sub'},sub)),h('span',{class:'check'},on?icon('check'):null));
+  const noneRow=(on,label,onclick)=>h('button',{class:'prow2 none-row'+(on?' on':''),'aria-pressed':String(on),onclick},h('div',{class:'tile none-tile'},icon('x')),h('div',{},h('div',{class:'nm'},label)),h('span',{class:'check'},on?icon('check'):null));
+  const pairBonus=it=>{ const c=pc(it); const others=P.filter(p=>p.it.id!==it.id); return others.length?others.reduce((t,p)=>t+pairColor(c,pc(p.it)).s,0)/others.length:0; };
+  const cold=ctx.t<60||ctx.wet||ctx.snow||(ctx.windy&&ctx.t<68);
+  /* jacket */
+  const jackets=S.items.filter(i=>slotOf(i)==='outer'&&!i.laundry).map(it=>({it,s:scoreOutfit({...o,outer:it.id},ctx)})).sort((a,b)=>b.s-a.s);
+  const bestJ=jackets[0]?.it.id;
+  const jacketSec=h('div',{class:'finish-sec'},h('h3',{},'Jacket'),h('p',{class:'fs-hint'},cold?`It's ${Math.round(ctx.t)}° and ${condLabel(S.gen.cond,S.gen.condText).toLowerCase()}, so a jacket is a good idea.`:'Optional for this weather.'),
+    jackets.length?h('div',{class:'plist'},noneRow(!o.outer,'No jacket',()=>{ o.outer=null; changed(); }),
+      jackets.slice(0,6).map(({it})=>row(it,o.outer===it.id,it.id===bestJ?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ o.outer=o.outer===it.id?null:it.id; changed(); })))
+    :h('p',{class:'muted'},'Add jackets and coats to your closet to choose one here.'));
+  /* sweater */
+  const sweaters=S.items.filter(i=>slotOf(i)==='top'&&!i.laundry&&i.id!==o.top&&(KNITS.has(i.sub)||flagsOf(i).has('knit'))).map(it=>{ if(!ctx.fit.has(it.id)) ctx.fit.set(it.id,itemFit(it,ctx)); return {it,s:ctx.fit.get(it.id)*.5+pairBonus(it)*1.4+(ctx.t<62?.6:ctx.t>=76?-1.2:0)}; }).sort((a,b)=>b.s-a.s);
+  const sweaterSec=h('div',{class:'finish-sec'},h('h3',{},'Sweater'),h('p',{class:'fs-hint'},o.dress?'Layer a knit over your dress for extra warmth.':'Layer a knit over your top for extra warmth.'),
+    sweaters.length?h('div',{class:'plist'},noneRow(!o.sweater,'No sweater',()=>{ o.sweater=null; changed(); }),
+      sweaters.slice(0,6).map(({it},i)=>row(it,o.sweater===it.id,i===0?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ o.sweater=o.sweater===it.id?null:it.id; changed(); })))
+    :h('p',{class:'muted'},'Add sweaters, cardigans or knits to your closet to layer one here.'));
+  /* shoes */
+  const shoes=S.items.filter(i=>slotOf(i)==='shoes'&&(!i.laundry||i.id===o.shoes)).map(it=>({it,s:scoreOutfit({...o,shoes:it.id},ctx)})).sort((a,b)=>b.s-a.s);
+  const shoeList=shoes.slice(0,6); if(o.shoes&&!shoeList.some(x=>x.it.id===o.shoes)){ const cur=shoes.find(x=>x.it.id===o.shoes); if(cur) shoeList.push(cur); }
+  const shoesSec=h('div',{class:'finish-sec'},h('h3',{},'Shoes'),h('p',{class:'fs-hint'},'Swap for a different pair. The best matches for this outfit and weather come first.'),
+    shoeList.length?h('div',{class:'plist'},shoeList.map(({it},i)=>row(it,o.shoes===it.id,o.shoes===it.id?'Wearing these':i===0?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ o.shoes=it.id; changed(); })))
+    :h('p',{class:'muted'},'Add shoes to your closet to choose them here.'));
+  /* accessories */
+  const accs=S.items.filter(i=>slotOf(i)==='acc'&&!i.laundry); const base={...o,accessories:[]};
   const ranked=accs.map(it=>({it,s:accScore(it,base,ctx)})).sort((a,b)=>b.s-a.s);
-  const toggle=id=>{ const a=o.accessories, i=a.indexOf(id); if(i>=0) a.splice(i,1); else a.push(id); if(isLiked(o)) persistLike(o); render(); };
-  return h('div',{},h('p',{class:'muted',style:{margin:'0 0 12px',fontSize:'14px'}},'Ranked for this outfit, the occasion and the weather. Tap to add or remove.'),
-    h('div',{class:'plist'},ranked.slice(0,12).map(({it,s},i)=>{ const on=o.accessories.includes(it.id);
-      return h('button',{class:'prow2'+(on?' on':''),'aria-pressed':String(on),onclick:()=>toggle(it.id)},h('div',{class:'tile'},tileImg(it)),
-        h('div',{},h('div',{class:'nm'},it.name),h('div',{class:'sub'},i<3&&s>0?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`)),h('span',{class:'check'},on?icon('check'):null)); })));
+  const accSec=h('div',{class:'finish-sec'},h('h3',{},'Accessories'),h('p',{class:'fs-hint'},'Tap to add or remove. Ranked for this outfit, the occasion and the weather.'),
+    accs.length?h('div',{class:'plist'},ranked.slice(0,10).map(({it,s},i)=>{ const on=o.accessories.includes(it.id);
+      return row(it,on,i<3&&s>0?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ const a=o.accessories, k=a.indexOf(it.id); if(k>=0) a.splice(k,1); else a.push(it.id); changed(); }); }))
+    :h('p',{class:'muted'},'Add bags, jewelry, hats, belts, scarves or sunglasses to your closet to choose them here.'));
+  return h('div',{class:'finish'},jacketSec,sweaterSec,shoesSec,accSec);
 }
 
 /* ---------- likes ---------- */
 function isLiked(o){ return S.liked.some(l=>l.id===o.id||comboKey(l)===comboKey(o)); }
-async function persistLike(o){ const l=S.liked.find(x=>x.id===o.id||comboKey(x)===comboKey(o)); if(!l) return; l.accessories=[...o.accessories]; try{ await persist('liked',l); }catch(e){} }
+async function persistLike(o){ const l=S.liked.find(x=>x.id===o.id||comboKey(x)===comboKey(o)); if(!l) return; l.accessories=[...o.accessories]; l.outer=o.outer||null; l.sweater=o.sweater||null; l.shoes=o.shoes||null; try{ await persist('liked',l); }catch(e){} }
 async function toggleLike(o){
   const ex=S.liked.find(l=>l.id===o.id||comboKey(l)===comboKey(o));
   if(ex){ try{ await DB.del('liked',ex.id); S.liked=S.liked.filter(l=>l!==ex); learnFrom(ex,-.5); toast('Removed from liked'); }catch(e){} return; }
-  const rec={id:o.id||uid(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title,why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||'',likedAt:Date.now()};
+  const rec={id:o.id||uid(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,sweater:o.sweater||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title,why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||'',likedAt:Date.now()};
   try{ await persist('liked',rec); S.liked.push(rec); learnFrom(rec,1); toast('Saved to liked outfits'); }catch(e){}
 }
 function viewLiked(){
   const v=h('section',{class:'view'});
-  v.append(h('div',{class:'head'},h('h1',{class:'title'},'Liked',h('small',{},S.liked.length===1?'1 outfit':`${S.liked.length} outfits`)),h('div',{class:'head-actions'},S.liked.length?lookSeg():null,h('button',{class:'btn primary',onclick:openOutfitPhoto},icon('upload'),'Add an outfit you love'))));
+  v.append(h('div',{class:'head'},h('h1',{class:'title'},'Liked',h('small',{},S.liked.length===1?'1 outfit':`${S.liked.length} outfits`)),h('div',{class:'head-actions'},h('button',{class:'btn primary',onclick:openOutfitPhoto},icon('upload'),'Add an outfit you love'))));
   const list=S.liked.slice().sort((a,b)=>b.likedAt-a.likedAt).filter(o=>I(o.dress)||I(o.top)||I(o.bottom));
   if(!list.length){ v.append(h('div',{class:'empty'},h('h2',{},'Nothing liked yet'),h('p',{},'Tap Like on any outfit you love, or add a photo of a look you already wore. It lands here for days when you need inspiration, and the stylist learns from it.'),h('div',{style:{display:'flex',gap:'10px',flexWrap:'wrap',justifyContent:'center'}},h('button',{class:'btn primary',onclick:()=>go('outfits')},'Generate an outfit'),h('button',{class:'btn',onclick:openOutfitPhoto},'Add an outfit you love')))); return v; }
   v.append(h('div',{class:'liked-grid'},list.map(o=>h('button',{class:'lcard',onclick:()=>openLiked(o)},outfitVisual(o,{small:true}),o.photo?h('img',{class:'photo-badge',src:IMG.url(o.photo),alt:'Your photo'}):null,h('div',{class:'t'},o.title),h('div',{class:'s'},o.occasion)))));
@@ -1935,7 +2016,7 @@ const parseISO=s=>{ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-
 const isoAdd=(iso,n)=>{ const d=parseISO(iso); d.setDate(d.getDate()+n); return isoOf(d); };
 const daysBetween=(a,b)=>Math.round((parseISO(b)-parseISO(a))/86400000);
 const fmtDay=iso=>parseISO(iso).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
-const idsOf=o=>[o.top,o.bottom,o.dress,o.outer,o.shoes,...(o.accessories||[])].filter(Boolean);
+const idsOf=o=>[o.top,o.bottom,o.dress,o.outer,o.sweater,o.shoes,...(o.accessories||[])].filter(Boolean);
 
 /* ---------- wear journal ---------- */
 function rebuildWearIdx(){
@@ -1946,7 +2027,7 @@ function rebuildWearIdx(){
 }
 const wearInfo=id=>S.wearIdx.get(id)||{count:0,last:null,days:null};
 async function logWear(o,date){
-  const rec={id:uid(),date:date||todayISO(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title||'Outfit',occasion:o.occasion||''};
+  const rec={id:uid(),date:date||todayISO(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,sweater:o.sweater||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title||'Outfit',occasion:o.occasion||''};
   try{ await persist('wear',rec); S.wear.push(rec); rebuildWearIdx(); learnFrom(rec,.7); toast('Saved to your journal. Enjoy your day!'); }catch(e){}
 }
 async function removeWear(w){ try{ await DB.del('wear',w.id); S.wear=S.wear.filter(x=>x!==w); rebuildWearIdx(); render(); }catch(e){} }
@@ -1955,65 +2036,7 @@ async function removeWear(w){ try{ await DB.del('wear',w.id); S.wear=S.wear.filt
 async function setLaundry(it,on){ it.laundry=!!on; try{ await persist('items',it); }catch(e){} settingsChanged(); }
 async function bringAllBack(){ for(const it of S.items.filter(i=>i.laundry)){ it.laundry=false; try{ await persist('items',it); }catch(e){} } toast('Everything is back in the closet'); settingsChanged(); render(); }
 
-/* ---------- mannequin (2D, no AI) ---------- */
-/* Boxes on a 240 x 560 figure: [left, top, width, height] */
-const MQ={
-  hat:[82,0,76,58], band:[92,12,56,30], eyewear:[98,36,44,18], scarf:[82,78,76,84], belt:[82,204,76,20],
-  top:{def:[62,90,116,182],crop:[62,90,116,124],tank:[74,90,92,172],cami:[74,92,92,160],bodysuit:[64,90,112,170],sweater:[56,88,128,196],hoodie:[54,86,132,200],sweatshirt:[56,88,128,196],turtleneck:[60,82,120,196]},
-  outer:{def:[52,84,136,212],'wool-coat':[50,84,140,392],trench:[50,84,140,392],cardigan:[56,86,128,212],puffer:[48,82,144,214],vest:[64,88,112,170]},
-  bottom:{def:[78,204,84,318],short:[76,204,88,118],'mini-skirt':[74,204,92,112],'midi-skirt':[70,204,100,228],pleated:[70,204,100,200],'maxi-skirt':[66,204,108,314]},
-  dress:{def:[64,90,112,322],short:[66,90,108,242],long:[56,90,128,432],gown:[52,90,136,440]},
-  shoes:{def:[84,500,72,50],'ankle-boots':[86,462,68,88],'tall-boots':[88,396,64,154],'rain-boots':[86,430,68,120],combat:[86,456,68,94]},
-  bag:{def:[170,228,66,104],clutch:[176,256,52,42],backpack:[168,150,62,120]},
-};
-function mqBox(slot,it){
-  const k=keyOf(it), fl=flagsOf(it);
-  if(slot==='top') return MQ.top[k]||MQ.top.def;
-  if(slot==='outer') return MQ.outer[k]||MQ.outer.def;
-  if(slot==='bottom') return MQ.bottom[k]||(fl.has('short')?MQ.bottom.short:MQ.bottom.def);
-  if(slot==='dress') return MQ.dress[k]||(fl.has('short')?MQ.dress.short:fl.has('long')?MQ.dress.long:MQ.dress.def);
-  if(slot==='shoes') return MQ.shoes[k]||MQ.shoes.def;
-  return null;
-}
-const FIGURE_SVG=`<svg viewBox="0 0 240 560" aria-hidden="true">
-<rect class="stand" x="118" y="300" width="4" height="244" rx="2"/><ellipse class="stand" cx="120" cy="548" rx="36" ry="6"/>
-<path class="body" d="M78 102C66 110 62 150 60 190C58 220 56 250 58 272L66 272C66 250 70 220 74 190C78 160 80 132 84 118Z"/>
-<path class="body" d="M162 102C174 110 178 150 180 190C182 220 184 250 182 272L174 272C174 250 170 220 166 190C162 160 160 132 156 118Z"/>
-<path class="body" d="M78 100C92 92 148 92 162 100C170 104 170 120 166 140C160 170 150 195 148 215C150 235 158 250 158 268C158 300 152 330 150 360C148 400 146 440 144 480L142 515L132 515C132 470 128 420 126 380C124 340 122 310 120 292C118 310 116 340 114 380C112 420 108 470 108 515L98 515L96 480C94 440 92 400 90 360C88 330 82 300 82 268C82 250 90 235 92 215C90 195 80 170 74 140C70 120 70 104 78 100Z"/>
-<path class="body" d="M110 70L130 70L132 96L108 96Z"/><ellipse class="body" cx="120" cy="44" rx="22" ry="27"/>
-<ellipse class="body" cx="103" cy="521" rx="10" ry="6"/><ellipse class="body" cx="137" cy="521" rx="10" ry="6"/></svg>`;
-function mannequin(o,{onPiece=null,anchor=null,small=false}={}){
-  const fig=h('div',{class:'fig'}); fig.innerHTML=FIGURE_SVG;
-  const place=(it,box,pos,z,stretch)=>{
-    if(!it||!box) return; const [x,y,w,hh]=box;
-    const useBack=S.mqBack&&it.back, cut=useBack?it.backCutout:it.cutout;
-    const img=h('img',{src:IMG.url(useBack?it.back:(it.img||it.photo)),alt:it.name,class:cut?(it.worn?'soft':''):'raw',style:{objectPosition:pos}});
-    const el=onPiece?h('button',{class:'mq'+(anchor===it.id?' anchor':''),title:`Build an outfit around the ${it.name.toLowerCase()}`,'aria-label':`Build an outfit around the ${it.name.toLowerCase()}`,onclick:e=>{ if(e.currentTarget.closest('.ocard')?.dataset.dragged==='1') return; onPiece(it.id); }},img)
-      :h('div',{class:'mq'+(anchor===it.id?' anchor':'')},img);
-    const set=(L,W)=>Object.assign(el.style,{left:L/240*100+'%',top:y/560*100+'%',width:W/240*100+'%',height:hh/560*100+'%',zIndex:String(z)});
-    set(x,w); fig.append(el);
-    if(stretch&&cut&&!it.worn) img.addEventListener('load',()=>{ const r=img.naturalWidth/img.naturalHeight; if(!r) return; const natural=r*hh, W=Math.max(natural*.78,Math.min(natural,w*1.35)); set(x+w/2-W/2,W); el.classList.add('fill'); },{once:true});
-  };
-  const g=k=>I(o[k]);
-  place(g('bottom'),g('bottom')&&mqBox('bottom',g('bottom')),'top center',2,true);
-  place(g('shoes'),g('shoes')&&mqBox('shoes',g('shoes')),'bottom center',3,false);
-  place(g('top'),g('top')&&mqBox('top',g('top')),'top center',4,true);
-  place(g('dress'),g('dress')&&mqBox('dress',g('dress')),'top center',4,true);
-  const accs=(o.accessories||[]).map(I).filter(Boolean);
-  accs.filter(a=>accKind(a)==='belt').forEach(a=>place(a,MQ.belt,'center',5,false));
-  place(g('outer'),g('outer')&&mqBox('outer',g('outer')),'top center',6,true);
-  for(const a of accs){ const k=accKind(a), key=keyOf(a);
-    if(k==='scarf') place(a,MQ.scarf,'top center',7,false);
-    else if(k==='bag') place(a,MQ.bag[key]||MQ.bag.def,'center',8,false);
-    else if(k==='head') place(a,['headband','hair-bow'].includes(key)?MQ.band:MQ.hat,'bottom center',9,false);
-    else if(k==='eyewear') place(a,MQ.eyewear,'center',10,false); }
-  const extra=accs.filter(a=>['jewelry','other'].includes(accKind(a)));
-  return h('div',{class:'manq'+(small?' small':'')},fig,extra.length?h('div',{class:'mq-extra'},extra.map(a=>h('span',{},h('img',{src:IMG.url(a.img||a.photo),alt:''}),a.name))):null);
-}
-function outfitVisual(o,opts={}){ return S.look==='mannequin'?mannequin(o,opts):collage(o,opts); }
-function lookSeg(){ const main=lookSegMain(); if(S.look!=='mannequin') return main;
-  return h('div',{class:'lookbar'},main,h('span',{class:'seg lookseg',role:'group','aria-label':'Mannequin side'},[[false,'Front'],[true,'Back']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(!!S.mqBack===k),onclick:()=>{ S.mqBack=k; render(); }},l)))); }
-function lookSegMain(){ return h('span',{class:'seg lookseg',role:'group','aria-label':'Outfit view'},[['collage','Collage'],['mannequin','Mannequin']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(S.look===k),onclick:()=>{ S.look=k; saveMeta(); render(); }},l))); }
+function outfitVisual(o,opts={}){ return collage(o,opts); }
 
 /* ---------- style learning from your photos, closet and what you wear ---------- */
 function buildProfile(){
@@ -2223,9 +2246,9 @@ function plannerPanel(mode){
     h('button',{class:'btn primary',style:{height:'50px'},onclick:()=>{ generatePlan(tr.dayList,true); render(); }},icon('spark'),'Plan my trip')];
 }
 function plannerStage(mode){
-  if(mode==='week'){ const days=ensureWeek().days; return h('div',{class:'stage plan'},h('div',{class:'plan-top'},lookSeg()),h('div',{class:'plan-grid'},days.map((d,i)=>dayCard(d,i,days,false)))); }
+  if(mode==='week'){ const days=ensureWeek().days; return h('div',{class:'stage plan'},h('div',{class:'plan-grid'},days.map((d,i)=>dayCard(d,i,days,false)))); }
   const tr=ensureTrip();
-  return h('div',{class:'stage plan'},h('div',{class:'plan-top'},lookSeg()),h('div',{class:'plan-grid'},tr.dayList.map((d,i)=>dayCard(d,i,tr.dayList,true))),packingList(tr));
+  return h('div',{class:'stage plan'},h('div',{class:'plan-grid'},tr.dayList.map((d,i)=>dayCard(d,i,tr.dayList,true))),packingList(tr));
 }
 
 /* ---------- closet gaps ---------- */
@@ -2339,6 +2362,9 @@ function openSettings(){
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'Your data'),
       h('p',{class:'muted',style:{margin:'0 0 12px'}},'Everything is saved privately in this browser. To move your closet to another device, tap Download backup here, send the file to that device, then open these settings there and tap Restore from backup.'),
       h('div',{style:{display:'flex',gap:'10px',flexWrap:'wrap'}},h('button',{class:'btn primary',onclick:exportBackup},'Download backup'),h('label',{class:'btn'},fileIn,'Restore from backup'))),
+    (()=>{ const todo=S.items.filter(i=>!i.polished&&i.cutout&&i.img&&i.img!==i.photo).length; const b=h('button',{class:'btn',disabled:!todo,onclick:e=>polishCloset(e.currentTarget)},todo?`Polish ${todo} ${todo===1?'photo':'photos'}`:'All photos polished');
+      return h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'Polish my existing photos'),
+        h('p',{class:'muted',style:{margin:'0 0 12px'}},'Gives pieces you added earlier truer colors, smoother edges and a straight, even frame. Cutouts you fixed by hand are kept.'),b); })(),
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'What the stylist has learned'),
       h('p',{class:'muted',style:{margin:'0 0 12px'}},`${Object.keys(S.learn.pairs).length} pairings remembered from your likes, choices and passes.`),
       h('button',{class:'btn',onclick:()=>{ S.learn={pairs:{},items:{}}; saveMeta(); toast('The stylist starts fresh'); }},'Reset what it learned')),
