@@ -1248,7 +1248,7 @@ async function saveMeta(){ try{ const m=clean({id:'settings',_t:Date.now(),profi
    7. CLOUD SYNC (optional) — sign in on any device and see the same closet.
    Paste your free Supabase project's details here (see SYNC-SETUP.md).
    ===================================================================== */
-const CLOUD={ url:'', anonKey:'' };   // e.g. url:'https://abcd1234.supabase.co', anonKey:'eyJhbGciOi…' or 'sb_publishable_…'
+const CLOUD={ url:'https://kziderbcewurchsqvmur.supabase.co', anonKey:'sb_publishable_hx1TJOcpe-WS2gJ00kmssA_5blVFRc-' };   // e.g. url:'https://abcd1234.supabase.co', anonKey:'eyJhbGciOi…' or 'sb_publishable_…'
 function cloudConfig(){
   if(CLOUD.url&&CLOUD.anonKey) return {...CLOUD,from:'file'};
   try{ const c=JSON.parse(localStorage.getItem('closet_cloud')||'null'); if(c&&c.url&&c.anonKey) return {...c,from:'settings'}; }catch(e){}
