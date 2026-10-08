@@ -480,11 +480,29 @@ button.piece:hover::after{content:"";position:absolute;inset:0;border-radius:18p
 .anycolor input::-webkit-color-swatch-wrapper{padding:0}
 .anycolor input::-webkit-color-swatch{border:0;border-radius:50%}
 .anycolor input::-moz-color-swatch{border:0;border-radius:50%}
+/* ---------- what the stylist learned ---------- */
+.taste-box{margin:0 0 28px}
+.taste-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.taste-cols h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:22px;margin:0 0 10px}
+.taste-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:start;margin-bottom:10px}
+.taste-row .tl{font-size:13px;color:var(--muted);padding-top:4px}
+.taste-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:3px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-deep);font-weight:500}
+.tchip .plus{opacity:.6}
+@media (max-width:899px){ .taste-cols{grid-template-columns:1fr} .taste-row{grid-template-columns:1fr;gap:4px} }
+/* ---------- sync ---------- */
+.sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);line-height:1.3}
+.sync-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none}
+.sync-pill[data-state="saving"]::before,.sync-pill[data-state="syncing"]::before{background:var(--gold)}
+.sync-pill[data-state="offline"]::before{background:var(--accent)}
+.sync-pill:empty{display:none}
 /* ---------- cutout fixer ---------- */
 .prev-col{display:grid;gap:6px;justify-items:center}
 .fix-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start}
 .fix-stage{border-radius:18px;overflow:hidden;background:var(--tile);line-height:0;justify-self:center}
-.fix-canvas{display:block;cursor:crosshair;touch-action:manipulation}
+.fix-canvas{display:block;cursor:crosshair;touch-action:none}
+.fix-mode{margin:0 0 14px;display:flex}
+.fix-mode button{flex:1;white-space:nowrap}
 .fix-range{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-size:12.5px;color:var(--muted)}
 .fix-link{border:0!important;background:none!important;color:var(--accent)!important;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 /* ---------- phones ---------- */
@@ -564,14 +582,19 @@ const CATS = [
  {k:'outerwear',label:'Outerwear',slot:'outer',subs:[
   ['blazer','Blazer',4,2.5,'classic minimal',''],['trench','Trench coat',3.5,3,'classic','waterproof'],['wool-coat','Wool coat',4,5,'classic minimal',''],
   ['puffer','Puffer jacket',1.5,5,'sporty street','waterproof'],['denim-jacket','Denim jacket',2,2.5,'street boho','denim'],['leather-jacket','Leather jacket',2.6,3,'edgy street',''],
-  ['rain-jacket','Rain jacket',1.5,2,'sporty','waterproof'],['cardigan','Cardigan',2.5,3,'cozy romantic preppy','knit'],['bomber','Bomber jacket',2,3,'street sporty',''],
+  ['rain-jacket','Rain jacket',1.5,2,'sporty','waterproof'],['bomber','Bomber jacket',2,3,'street sporty',''],
   ['fleece','Fleece or zip-up',1.2,3.5,'sporty cozy','athletic'],['shacket','Shacket or overshirt',2,2.5,'street minimal',''],['vest','Vest or gilet',2,2,'preppy sporty','']]},
  {k:'tops',label:'Tops',slot:'top',subs:[
   ['tee','T-shirt',1.6,1,'minimal street',''],['graphic-tee','Graphic tee',1,1,'street',''],['tank','Tank top',1.5,.5,'sporty minimal','bare'],
   ['cami','Camisole',2.6,.5,'romantic glam','bare'],['crop','Crop top',2,.8,'street glam',''],['long-sleeve','Long-sleeve top',2,2,'minimal classic',''],
-  ['sweater','Sweater',2.5,4,'cozy classic','knit'],['turtleneck','Turtleneck',3,3.5,'minimal classic','knit'],['hoodie','Hoodie',1,3.5,'sporty street','athletic'],
+  ['hoodie','Hoodie',1,3.5,'sporty street','athletic'],
   ['sweatshirt','Sweatshirt',1.3,3,'sporty cozy',''],['bodysuit','Bodysuit',2.8,1.5,'minimal glam',''],['polo','Polo',2.5,1.5,'preppy sporty',''],
-  ['knit-vest','Sweater vest',2.6,2.5,'preppy','knit'],['corset','Corset top',3.6,1,'glam romantic','']]},
+  ['corset','Corset top',3.6,1,'glam romantic','']]},
+ /* Sweaters: "layer" pieces can be worn alone or over a top; a "base" (turtleneck) goes under other layers; "vestonly" needs a shirt underneath */
+ {k:'sweaters',label:'Sweaters',slot:'top',subs:[
+  ['sweater','Thick sweater',2.5,4.5,'cozy classic','knit layer'],['thin-sweater','Thin sweater',2.9,3,'minimal classic','knit layer'],
+  ['cardigan','Cardigan',2.6,3,'cozy romantic preppy','knit layer open'],['knit-vest','Sweater vest',2.6,2.5,'preppy classic','knit layer vestonly'],
+  ['quarter-zip','Quarter-zip',2.3,3.5,'sporty preppy','knit layer'],['turtleneck','Turtleneck',3,3.5,'minimal classic','knit base']]},
  {k:'blouses',label:'Blouses',slot:'top',subs:[
   ['button-up','Button-up shirt',3,2,'classic minimal preppy',''],['oxford','Oxford shirt',3,2,'preppy classic',''],['silk-blouse','Silk blouse',3.8,1.5,'glam classic',''],
   ['peasant','Peasant blouse',2.5,1.5,'boho romantic',''],['ruffle','Ruffle blouse',3.2,1.5,'romantic',''],['wrap-top','Wrap top',3.3,1.5,'romantic classic',''],['linen-shirt','Linen shirt',2.5,1,'boho minimal','']]},
@@ -641,7 +664,7 @@ const OCCASIONS=[
 const ACTIVE={k:'active',label:'Active',p:'staying active',f:1,vib:{sporty:1,cozy:.3,glam:-.8,classic:-.4},prefer:'running sneakers leggings bike athletic-shorts tank hoodie fleece cap backpack',avoid:'pumps strappy loafers silk-blouse blazer gown cocktail'};
 const OCC={}; [...OCCASIONS,ACTIVE].forEach(o=>{ OCC[o.k]=o; o.preferSet=new Set(o.prefer.split(' ').filter(Boolean)); o.avoidSet=new Set(o.avoid.split(' ').filter(Boolean)); });
 const CONDS=[{k:'sunny',label:'Sunny'},{k:'cloudy',label:'Cloudy'},{k:'rainy',label:'Rainy'},{k:'windy',label:'Windy'},{k:'snowy',label:'Snowy'},{k:'custom',label:'Something else'}];
-const FEEDBACK=[{k:'occasion',label:'Fit the occasion better'},{k:'casual',label:'More casual'},{k:'formal',label:'More formal'},{k:'warmer',label:'Warmer'},{k:'cooler',label:'Cooler'},{k:'color',label:"Don't like the colors"},{k:'other',label:'Just show another'},{k:'custom',label:'Something else'}];
+const FEEDBACK=[{k:'occasion',label:'Fit the occasion better'},{k:'casual',label:'More casual'},{k:'formal',label:'More formal'},{k:'warmer',label:'Warmer'},{k:'cooler',label:'Cooler'},{k:'color',label:"Don't like the colors"},{k:'nope',label:'Not my style'},{k:'other',label:'Just show another'},{k:'custom',label:'Something else'}];
 const PATTERNS=['solid','striped','plaid','print','floral','graphic','textured','other'];
 const BOLD_PATTERNS=new Set(['striped','plaid','print','floral','graphic']);
 const FITS=['fitted','regular','relaxed','oversized','other'];
@@ -664,7 +687,14 @@ function feedbackFromText(t){ t=(t||'').toLowerCase(); const k=[];
   if(/occasion|appropriate|suit|for (the|a) /.test(t)) k.push('occasion');
   if(/shoe|sneaker|boot|heel|sandal|loafer|flat/.test(t)) k.push('no-shoes');
   if(/jacket|coat|blazer|layer|cardigan/.test(t)&&/no |don.?t|without|not /.test(t)) k.push('no-outer');
-  return k.length?k:['other']; }
+  if(/not (my|me)|hate|ugly|never|not my style|not for me/.test(t)) k.push('nope');
+  const syn={grey:'gray',tan:'camel',maroon:'burgundy',wine:'burgundy',mustard:'yellow',khaki:'khaki',ivory:'cream','off-white':'cream',mint:'green',sage:'green',forest:'green',rust:'orange',coral:'orange',lilac:'lavender',violet:'purple',baby:'lightblue',sky:'lightblue',chocolate:'brown'};
+  const words=[...COLORS.map(c=>[c.k==='lightblue'?'light blue':c.k,c.k]),...Object.entries(syn)].filter(([w])=>w&&w!=='multi');
+  for(const [w,fam] of words){ const m=new RegExp('\\b'+w.replace(' ','\\s')+'\\b').exec(t); if(!m) continue;
+    const before=t.slice(Math.max(0,m.index-26),m.index);
+    const neg=/\b(no|not|don.?t|less|without|hate|too)\b/.test(before), pos=!neg&&/\b(more|love|want|add|some|prefer)\b/.test(before);
+    k.push((pos?'want:':'avoid:')+fam); }
+  return k.length?[...new Set(k)]:['other']; }
 
 /* Color families used for names, filters and matching */
 const COLORS=[
@@ -842,8 +872,8 @@ function growMask(P,seeds,tol){
   return fg;
 }
 /* Step 3: clean the mask, then read colors, pattern and shape, and make the cutout */
-async function finishScan(P,fg0){
-  const {bmp,photo,W,H,N,s,Lc,Ac,Bc,gains}=P; const q=new Int32Array(N); let qh=0,qt=0;
+function cleanMask(P,fg0){
+  const {W,H,N}=P; const q=new Int32Array(N); let qh=0,qt=0;
   let fg=fg0?fg0.slice():new Uint8Array(N);
   const morph=(m,grow)=>{ const b=new Uint8Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x, n=[m[i],x>0?m[i-1]:m[i],x<W-1?m[i+1]:m[i],y>0?m[i-W]:m[i],y<H-1?m[i+W]:m[i]]; b[i]=grow?(n.some(v=>v)?1:0):(n.every(v=>v)?1:0); } return b; };
   const cr=Math.max(3,Math.round(Math.max(W,H)/60)); for(let k=0;k<cr;k++) fg=morph(fg,true); for(let k=0;k<cr;k++) fg=morph(fg,false);   // closing: fills light stripes and small gaps inside the piece
@@ -857,6 +887,11 @@ async function finishScan(P,fg0){
   const mask=new Uint8Array(N); let area=0; for(let i=0;i<N;i++) if(lab[i]>=0&&keep.has(lab[i])){ mask[i]=1; area++; }
   const ratio=area/N; const cutout=ratio>.03&&ratio<.93;
   if(!cutout){ area=0; for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x, e=((x-W/2)/(W*.42))**2+((y-H/2)/(H*.45))**2; mask[i]=e<1?1:0; area+=mask[i]; } }
+  return {mask,area,cutout,comps,keep};
+}
+async function finishScan(P,fg0){
+  const {bmp,photo,W,H,N,s,Lc,Ac,Bc,gains}=P;
+  const cm=cleanMask(P,fg0); const {mask,cutout,comps,keep}=cm; let area=cm.area;
   let bx0=W,bx1=0,by0=H,by1=0; for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(mask[y*W+x]){ if(x<bx0)bx0=x; if(x>bx1)bx1=x; if(y<by0)by0=y; if(y>by1)by1=y; }
   const bw=bx1-bx0+1, bh=by1-by0+1;
   /* colors: weighted k-means on garment pixels */
@@ -905,7 +940,7 @@ async function finishScan(P,fg0){
     const A=amx.getImageData(0,0,OW,OH).data, im=ox.getImageData(0,0,OW,OH); for(let i=3;i<im.data.length;i+=4) im.data[i]=A[i]; ox.putImageData(im,0,0);
     display=await canvasBlob(polishCanvas(oc,{gains,smooth:true}));
   }
-  return {photo,display,cutout,colors:colors.length?colors:[colorFromFam('gray')],pattern,edge:+edge.toFixed(1),shape:F,guess};
+  return {photo,display,cutout,mask,colors:colors.length?colors:[colorFromFam('gray')],pattern,edge:+edge.toFixed(1),shape:F,guess};
 }
 async function scanGarment(file){
   const P=await prepScan(file); const a=autoMask(P);
@@ -915,32 +950,152 @@ async function scanGarment(file){
   if(g){ const r=await finishScan(P,g); if(r.cutout){ r.busy=true; r.guess={cat:'',sub:'',conf:0}; return r; } }   /* shapes of worn clothes are unreliable, so you pick the type */
   const r=await finishScan(P,a.fg); r.busy=a.busy; return r;
 }
-/* Tap-to-select tool for fixing a cutout by hand */
+/* ---------- outline tools: trace a mask into dots, fill dots into a mask, snap to the fabric ---------- */
+function simplifyOpen(pts,eps){
+  if(pts.length<3) return pts.slice();
+  const [ax,ay]=pts[0], [bx,by]=pts[pts.length-1]; const dx=bx-ax, dy=by-ay, L=Math.hypot(dx,dy)||1;
+  let mi=0, md=-1; for(let i=1;i<pts.length-1;i++){ const d=Math.abs(dy*pts[i][0]-dx*pts[i][1]+bx*ay-by*ax)/L; if(d>md){ md=d; mi=i; } }
+  if(md<=eps) return [pts[0],pts[pts.length-1]];
+  const l=simplifyOpen(pts.slice(0,mi+1),eps), r=simplifyOpen(pts.slice(mi),eps); return l.slice(0,-1).concat(r);
+}
+function simplifyClosed(pts,eps){
+  if(pts.length<6) return pts.slice();
+  let far=0,fd=-1; for(let i=1;i<pts.length;i++){ const d=Math.hypot(pts[i][0]-pts[0][0],pts[i][1]-pts[0][1]); if(d>fd){ fd=d; far=i; } }
+  const a=simplifyOpen(pts.slice(0,far+1),eps), b=simplifyOpen(pts.slice(far).concat([pts[0]]),eps);
+  return a.slice(0,-1).concat(b.slice(0,-1));
+}
+/* turns a freehand or traced outline into a sensible number of dots */
+function toDots(pts,minD=1.2,max=56){
+  let eps=minD, out=simplifyClosed(pts,eps); while(out.length>max&&eps<40){ eps*=1.35; out=simplifyClosed(pts,eps); } return out.length>=3?out:null;
+}
+function traceOutlines(mask,W,H){
+  const lab=new Int32Array(W*H).fill(-1), areas=[], starts=[], q=new Int32Array(W*H);
+  for(let i=0;i<W*H;i++){ if(!mask[i]||lab[i]>=0) continue; const id=areas.length; let qh=0,qt=0,a=0; q[qt++]=i; lab[i]=id; starts.push(i);
+    while(qh<qt){ const k=q[qh++]; a++; for(const j of nbrs(k,W,H)) if(j>=0&&mask[j]&&lab[j]<0){ lab[j]=id; q[qt++]=j; } } areas.push(a); }
+  const big=Math.max(0,...areas); const nb8=[[-1,0],[-1,-1],[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1]]; const polys=[];
+  areas.forEach((a,id)=>{ if(a<Math.max(30,big*.15)) return;
+    const is=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&lab[y*W+x]===id;
+    const sx=starts[id]%W, sy=(starts[id]/W)|0; let p=[sx,sy], b=[sx-1,sy]; const pts=[]; let guard=0;
+    do{ pts.push([p[0]+.5,p[1]+.5]);
+      let k=nb8.findIndex(d=>p[0]+d[0]===b[0]&&p[1]+d[1]===b[1]); if(k<0) k=0; let moved=false;
+      for(let i=1;i<=8;i++){ const j=(k+i)%8, nx=p[0]+nb8[j][0], ny=p[1]+nb8[j][1];
+        if(is(nx,ny)){ const pj=(k+i-1)%8; b=[p[0]+nb8[pj][0],p[1]+nb8[pj][1]]; p=[nx,ny]; moved=true; break; } }
+      if(!moved) break;
+    }while((p[0]!==sx||p[1]!==sy)&&++guard<40000);
+    const d=toDots(pts,1.8,32); if(d) polys.push(d); });
+  return polys;
+}
+function polyMask(polys,W,H){
+  const c=canvasOf(W,H), x=c.getContext('2d',{willReadFrequently:true}); x.fillStyle='#000';
+  for(const pl of polys){ if(pl.length<3) continue; x.beginPath(); x.moveTo(pl[0][0],pl[0][1]); for(const pt of pl.slice(1)) x.lineTo(pt[0],pt[1]); x.closePath(); x.fill(); }
+  const d=x.getImageData(0,0,W,H).data, m=new Uint8Array(W*H); for(let i=0;i<W*H;i++) m[i]=d[i*4+3]>127?1:0; return m;
+}
+/* Snap: near the drawn outline, each pixel goes to whichever side it looks like — the fabric inside or the surface outside */
+function snapMask(P,inside){
+  const {W,H,N,Lc,Ac,Bc}=P; const R=Math.max(3,Math.round(Math.max(W,H)*.035));
+  const dist=new Int16Array(N).fill(-1), q=new Int32Array(N); let qh=0,qt=0;
+  for(let i=0;i<N;i++){ for(const j of nbrs(i,W,H)) if(j>=0&&inside[j]!==inside[i]){ dist[i]=0; q[qt++]=i; break; } }
+  while(qh<qt){ const i=q[qh++]; if(dist[i]>=2*R) continue; for(const j of nbrs(i,W,H)) if(j>=0&&dist[j]<0){ dist[j]=dist[i]+1; q[qt++]=j; } }
+  const step=Math.max(1,Math.floor(Math.sqrt(N/5000)));
+  const sample=f=>{ const pts=[]; for(let i=0;i<N;i+=step) if(f(i)) pts.push([Lc[i],Ac[i],Bc[i],1]); return pts; };
+  let fgP=sample(i=>inside[i]&&(dist[i]<0||dist[i]>R)); if(fgP.length<40) fgP=sample(i=>inside[i]);
+  let bgP=sample(i=>!inside[i]&&dist[i]>=R&&dist[i]<=2*R); if(bgP.length<40) bgP=sample(i=>!inside[i]&&dist[i]>=0);
+  if(fgP.length<20||bgP.length<20) return inside;
+  const fgC=kmeans(fgP,4).filter(c=>c.w>.03), bgC=kmeans(bgP,4).filter(c=>c.w>.03);
+  const near=(i,C)=>{ let m=1e9; for(const c of C){ const d=Math.hypot((Lc[i]-c.L)*.6,Ac[i]-c.a,Bc[i]-c.b); if(d<m) m=d; } return m; };
+  const out=new Uint8Array(N);
+  for(let i=0;i<N;i++){ if(dist[i]<0||dist[i]>R) out[i]=inside[i]; else out[i]=near(i,fgC)<near(i,bgC)?1:0; }
+  /* keep only what connects to the solid middle, then fill any holes */
+  const keep=new Uint8Array(N); qh=0;qt=0;
+  for(let i=0;i<N;i++) if(out[i]&&inside[i]&&(dist[i]<0||dist[i]>R)){ keep[i]=1; q[qt++]=i; }
+  if(!qt) return inside;
+  while(qh<qt){ const i=q[qh++]; for(const j of nbrs(i,W,H)) if(j>=0&&out[j]&&!keep[j]){ keep[j]=1; q[qt++]=j; } }
+  const outside=new Uint8Array(N); qh=0;qt=0;
+  for(let x=0;x<W;x++) for(const i of [x,(H-1)*W+x]) if(!keep[i]&&!outside[i]){ outside[i]=1; q[qt++]=i; }
+  for(let y=0;y<H;y++) for(const i of [y*W,y*W+W-1]) if(!keep[i]&&!outside[i]){ outside[i]=1; q[qt++]=i; }
+  while(qh<qt){ const i=q[qh++]; for(const j of nbrs(i,W,H)) if(j>=0&&!keep[j]&&!outside[j]){ outside[j]=1; q[qt++]=j; } }
+  for(let i=0;i<N;i++) keep[i]=outside[i]?0:1;
+  return keep;
+}
+function smoothMask(m,W,H,r){ const N=W*H; const step=(src,grow)=>{ const o=new Uint8Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; let v=src[i];
+    if(grow){ if(!v) v=(x>0&&src[i-1])||(x<W-1&&src[i+1])||(y>0&&src[i-W])||(y<H-1&&src[i+W])?1:0; } else if(v) v=(x>0&&!src[i-1])||(x<W-1&&!src[i+1])||(y>0&&!src[i-W])||(y<H-1&&!src[i+W])?0:1; o[i]=v; } return o; };
+  let o=m; for(let k=0;k<r;k++) o=step(o,false); for(let k=0;k<r;k++) o=step(o,true); for(let k=0;k<r;k++) o=step(o,true); for(let k=0;k<r;k++) o=step(o,false); return o; }
+function startMask(P){
+  const a=autoMask(P);
+  if(!a.busy){ const c=cleanMask(P,a.fg); if(c.cutout) return c.mask; }
+  const g=growMask(P,null,15); if(g){ const c=cleanMask(P,g); if(c.cutout) return c.mask; }
+  return null;
+}
+
+/* ---------- the cutout tool: draw around the piece, then drag dots to fix the shape ---------- */
 async function openCutoutFixer(src,onDone){
   const holder=h('div',{class:'fix-wrap'},h('p',{class:'muted'},'Loading your photo…'));
   const m=openModal(h('div',{},h('div',{class:'modal-head'},h('h2',{},'Fix the cutout')),h('div',{class:'modal-body'},holder)),{size:'mid'});
   let P; try{ P=await prepScan(src); }catch(e){ holder.replaceChildren(h('p',{},"Couldn't read that photo.")); return; }
-  let seeds=[], tol=15, mask=null;
-  const maxW=Math.min(420,window.innerWidth-60), sc=Math.min(maxW/P.W,520/P.H), CW=Math.round(P.W*sc), CH=Math.round(P.H*sc);
+  let mode='draw', polys=[], snap=true, mask=null, seeds=[], tol=15, path=null, drag=null, history=[], lastTap={k:'',t:0};
+  const init=startMask(P); if(init) polys=traceOutlines(smoothMask(init,P.W,P.H,2),P.W,P.H);
+  const maxW=Math.min(440,window.innerWidth-60), sc=Math.min(maxW/P.W,540/P.H), CW=Math.round(P.W*sc), CH=Math.round(P.H*sc);
   const cv=h('canvas',{class:'fix-canvas',width:String(CW*2),height:String(CH*2),style:{width:CW+'px',height:CH+'px'}}); const cx=cv.getContext('2d');
   const ov=canvasOf(P.W,P.H), ovx=ov.getContext('2d');
-  const draw=()=>{ cx.clearRect(0,0,cv.width,cv.height); cx.drawImage(P.bmp,0,0,cv.width,cv.height);
-    if(mask){ const d=ovx.createImageData(P.W,P.H); for(let i=0;i<P.N;i++){ d.data[i*4]=255;d.data[i*4+1]=255;d.data[i*4+2]=255;d.data[i*4+3]=mask[i]?0:205; } ovx.putImageData(d,0,0); cx.imageSmoothingEnabled=true; cx.drawImage(ov,0,0,cv.width,cv.height); }
-    const k=cv.width/P.W; for(const sd of seeds){ cx.beginPath(); cx.arc((sd.x+.5)*k,(sd.y+.5)*k,9,0,Math.PI*2); cx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent')||'#9E4527'; cx.fill(); cx.lineWidth=3; cx.strokeStyle='#fff'; cx.stroke(); } };
-  const regrow=()=>{ mask=seeds.length?growMask(P,seeds,tol):null; saveBtn.disabled=!mask; undoBtn.disabled=!seeds.length; draw(); };
-  cv.addEventListener('click',e=>{ const r=cv.getBoundingClientRect(); const x=Math.floor((e.clientX-r.left)/r.width*P.W), y=Math.floor((e.clientY-r.top)/r.height*P.H); seeds.push({x:clamp(x,0,P.W-1),y:clamp(y,0,P.H-1)}); regrow(); });
-  const slider=h('input',{type:'range',min:'5',max:'32',value:String(tol),'aria-label':'How much to include',oninput:e=>{ tol=+e.target.value; if(seeds.length) regrow(); }});
-  const undoBtn=h('button',{class:'btn sm',disabled:true,onclick:()=>{ seeds.pop(); regrow(); }},'Undo tap');
-  const saveBtn=h('button',{class:'btn primary',disabled:true,onclick:async()=>{ saveBtn.disabled=true; saveBtn.textContent='Saving…'; const r=await finishScan(P,mask); m.close(); onDone(r); }},'Save cutout');
+  const accent=()=>getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#9E4527';
+  const remask=()=>{ if(mode==='tap'){ mask=seeds.length?growMask(P,seeds,tol):null; }
+    else { const pm=polys.length?polyMask(polys,P.W,P.H):null; mask=pm&&snap?snapMask(P,pm):pm; } paint(); };
+  const draw=()=>{ const K=cv.width/P.W; cx.clearRect(0,0,cv.width,cv.height); cx.drawImage(P.bmp,0,0,cv.width,cv.height);
+    if(mask){ const d=ovx.createImageData(P.W,P.H); for(let i=0;i<P.N;i++){ d.data[i*4]=255;d.data[i*4+1]=255;d.data[i*4+2]=255;d.data[i*4+3]=mask[i]?0:200; } ovx.putImageData(d,0,0); cx.imageSmoothingEnabled=true; cx.drawImage(ov,0,0,cv.width,cv.height); }
+    const ac=accent();
+    if(mode==='draw'){
+      for(const pl of polys){ cx.beginPath(); pl.forEach((pt,i)=>i?cx.lineTo(pt[0]*K,pt[1]*K):cx.moveTo(pt[0]*K,pt[1]*K)); cx.closePath(); cx.lineWidth=3; cx.strokeStyle=ac; cx.setLineDash([]); cx.stroke(); }
+      for(const pl of polys) for(const pt of pl){ cx.beginPath(); cx.arc(pt[0]*K,pt[1]*K,9,0,Math.PI*2); cx.fillStyle='#fff'; cx.fill(); cx.lineWidth=3.5; cx.strokeStyle=ac; cx.stroke(); }
+      if(path&&path.length>1){ cx.beginPath(); path.forEach((pt,i)=>i?cx.lineTo(pt[0]*K,pt[1]*K):cx.moveTo(pt[0]*K,pt[1]*K)); cx.lineWidth=4; cx.strokeStyle=ac; cx.setLineDash([10,8]); cx.stroke(); cx.setLineDash([]); }
+    } else for(const sd of seeds){ cx.beginPath(); cx.arc((sd.x+.5)*K,(sd.y+.5)*K,9,0,Math.PI*2); cx.fillStyle=ac; cx.fill(); cx.lineWidth=3; cx.strokeStyle='#fff'; cx.stroke(); } };
+  const ptOf=e=>{ const r=cv.getBoundingClientRect(); return [clamp((e.clientX-r.left)/r.width*P.W,0,P.W-.01),clamp((e.clientY-r.top)/r.height*P.H,0,P.H-.01)]; };
+  const hitR=()=>{ const r=cv.getBoundingClientRect(); return 16*P.W/r.width; };
+  const save=()=>{ history.push(JSON.stringify(mode==='draw'?polys:seeds)); if(history.length>40) history.shift(); };
+  const segDist=(p,a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L=dx*dx+dy*dy||1; const t=clamp(((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L,0,1); return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy); };
+  cv.addEventListener('pointerdown',e=>{ e.preventDefault(); const p=ptOf(e);
+    if(mode==='tap'){ save(); seeds.push({x:Math.floor(p[0]),y:Math.floor(p[1])}); remask(); return; }
+    const R=hitR();
+    for(let pi=0;pi<polys.length;pi++) for(let vi=0;vi<polys[pi].length;vi++){ const v=polys[pi][vi]; if(Math.hypot(v[0]-p[0],v[1]-p[1])<R){
+      const key=pi+':'+vi, now=Date.now();
+      if(lastTap.k===key&&now-lastTap.t<380){ save(); if(polys[pi].length>3) polys[pi].splice(vi,1); else polys.splice(pi,1); lastTap={k:'',t:0}; remask(); return; }
+      lastTap={k:key,t:now}; save(); drag={pi,vi}; try{ cv.setPointerCapture(e.pointerId); }catch(_){} return; } }
+    for(let pi=0;pi<polys.length;pi++){ const pl=polys[pi]; for(let vi=0;vi<pl.length;vi++){ const a=pl[vi], b=pl[(vi+1)%pl.length]; if(segDist(p,a,b)<R*.8){
+      save(); pl.splice(vi+1,0,p.slice()); drag={pi,vi:vi+1}; try{ cv.setPointerCapture(e.pointerId); }catch(_){} draw(); return; } } }
+    path=[p]; try{ cv.setPointerCapture(e.pointerId); }catch(_){} });
+  cv.addEventListener('pointermove',e=>{ if(drag){ polys[drag.pi][drag.vi]=ptOf(e); draw(); } else if(path){ const p=ptOf(e), l=path[path.length-1]; if(Math.hypot(p[0]-l[0],p[1]-l[1])>.6){ path.push(p); draw(); } } });
+  const up=()=>{ if(drag){ drag=null; remask(); return; }
+    if(path){ const pts=path; path=null; let area=0; for(let i=0;i<pts.length;i++){ const a=pts[i], b=pts[(i+1)%pts.length]; area+=a[0]*b[1]-b[0]*a[1]; }
+      if(pts.length>8&&Math.abs(area)/2>P.N*.004){ const d=toDots(pts,1.4,40); if(d){ save();
+          /* move the new dots onto the fabric's edge, so the dots match what will be kept */
+          if(snap){ const sm=smoothMask(snapMask(P,polyMask([d],P.W,P.H)),P.W,P.H,Math.max(2,Math.round(Math.max(P.W,P.H)/100))); const tr=traceOutlines(sm,P.W,P.H).sort((x,y)=>y.length-x.length); polys.push(tr[0]&&tr[0].length>=3?tr[0]:d); } else polys.push(d); } }
+      else if(pts.length<=8) toast('Draw all the way around the piece, then lift your finger.');
+      remask(); } };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  const modeSeg=h('span',{class:'seg fix-mode',role:'group','aria-label':'How to select'});
+  const snapBox=h('label',{class:'toggle'},h('input',{type:'checkbox',checked:snap,onchange:e=>{ snap=e.target.checked; remask(); }}),h('span',{},h('b',{},'Snap to the edges. '),'Tightens your outline to where the fabric ends.'));
+  const slider=h('input',{type:'range',min:'5',max:'32',value:String(tol),'aria-label':'How much to include',oninput:e=>{ tol=+e.target.value; if(seeds.length) remask(); }});
+  const tolBox=h('label',{class:'field'},'How much to include',h('div',{class:'fix-range'},h('span',{},'Less'),slider,h('span',{},'More')));
+  const help=h('div',{});
+  const undoBtn=h('button',{class:'btn sm',onclick:()=>{ const last=history.pop(); if(last==null) return; if(mode==='draw') polys=JSON.parse(last); else seeds=JSON.parse(last); remask(); }},'Undo');
+  const clearBtn=h('button',{class:'btn sm',onclick:()=>{ save(); if(mode==='draw') polys=[]; else seeds=[]; remask(); }},'Start over');
+  const saveBtn=h('button',{class:'btn primary',onclick:async()=>{ if(!mask) return; saveBtn.disabled=true; saveBtn.textContent='Saving…'; const r=await finishScan(P,mask); m.close(); onDone(r); }},'Save cutout');
+  function paint(){
+    modeSeg.replaceChildren(...[['draw','Draw & adjust'],['tap','Tap by color']].map(([k,l])=>h('button',{type:'button','aria-pressed':String(mode===k),onclick:()=>{ if(mode===k) return;
+      if(k==='draw'&&mask) polys=traceOutlines(mask,P.W,P.H); mode=k; history=[]; remask(); }},l)));
+    help.replaceChildren(...(mode==='draw'?[
+      h('p',{style:{margin:'0 0 8px'}},polys.length?'Drag a dot to move the outline. Tap the line to add a dot, double-tap a dot to remove it.':'Draw around the piece with your finger or mouse, then lift to close the shape.'),
+      h('p',{class:'muted',style:{margin:'0 0 14px',fontSize:'13.5px'}},'Draw another loop to add a separate part, like the second shoe. Anything outside the outline fades to white.')]
+      :[h('p',{style:{margin:'0 0 8px'}},'Tap the piece of clothing. Tap more spots to add parts that were missed, like a sleeve in shadow.'),
+        h('p',{class:'muted',style:{margin:'0 0 14px',fontSize:'13.5px'}},'Switch back to Draw & adjust to fine-tune the result with dots.')]));
+    snapBox.style.display=mode==='draw'?'':'none'; tolBox.style.display=mode==='tap'?'':'none';
+    saveBtn.disabled=!mask; draw();
+  }
   holder.replaceChildren(h('div',{class:'fix-grid'},
     h('div',{class:'fix-stage'},cv),
-    h('div',{class:'fix-side'},
-      h('p',{style:{margin:'0 0 10px'}},'Tap the piece of clothing. Tap more spots to add parts that were missed, like a sleeve in shadow.'),
-      h('p',{class:'muted',style:{margin:'0 0 16px',fontSize:'13.5px'}},'Everything that is not selected fades to white, so you can see exactly what will be kept.'),
-      h('label',{class:'field'},'How much to include',h('div',{class:'fix-range'},h('span',{},'Less'),slider,h('span',{},'More'))),
-      h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',margin:'14px 0'}},undoBtn,h('button',{class:'btn sm',onclick:()=>{ seeds=[]; regrow(); }},'Start over')),
+    h('div',{class:'fix-side'},modeSeg,help,snapBox,tolBox,
+      h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap',margin:'14px 0'}},undoBtn,clearBtn),
       h('div',{class:'foot',style:{borderTop:'1px solid var(--line)'}},h('button',{class:'btn',onclick:()=>{ m.close(); onDone({cutout:false}); }},'Use the whole photo'),saveBtn))));
-  draw();
+  remask();
 }
 /* ---------- photo polish (no AI): true colors, smooth edges, straight, evenly framed ---------- */
 /* White balance and exposure from the plain surface the piece was photographed on */
@@ -1080,26 +1235,191 @@ const DB={
   keys(s){ return this.run(s,'readonly',st=>st.getAllKeys()); },
 };
 const IMG={ urls:new Map(),
-  async put(blob){ const id=uid(); await DB.put('images',id,blob); this.urls.set(id,URL.createObjectURL(blob)); return id; },
+  async put(blob){ const id=uid(); await DB.put('images',id,blob); this.urls.set(id,URL.createObjectURL(blob)); Cloud.upImage(id,blob); return id; },
   url(id){ return id?this.urls.get(id)||'':''; },
-  async del(id){ if(!id) return; try{ await DB.del('images',id); }catch(e){} const u=this.urls.get(id); if(u) URL.revokeObjectURL(u); this.urls.delete(id); },
+  async del(id){ if(!id) return; try{ await DB.del('images',id); }catch(e){} Cloud.rmImage(id); const u=this.urls.get(id); if(u) URL.revokeObjectURL(u); this.urls.delete(id); },
   async preload(){ const keys=await DB.keys('images'); await Promise.all(keys.map(async k=>{ const b=await DB.get('images',k); if(b) this.urls.set(k,URL.createObjectURL(b)); })); },
   clear(){ for(const u of this.urls.values()) URL.revokeObjectURL(u); this.urls.clear(); },
 };
 const clean=o=>JSON.parse(JSON.stringify(o));
-async function persist(store,obj){ try{ await DB.put(store,obj.id,clean(obj)); }catch(e){ console.warn(e); toast(e&&e.name==='QuotaExceededError'?'This browser is out of storage space. Download a backup and remove a few photos.':"Couldn't save that change."); throw e; } }
-async function saveMeta(){ try{ await DB.put('meta','settings',clean({profileUse:S.profileUse,myVibes:S.myVibes,learn:S.learn,unit:S.gen.unit,hinted:S.hinted,look:S.look,plan:S.plan,trip:S.trip})); }catch(e){ console.warn(e); } }
+async function persist(store,obj){ try{ obj._t=Date.now(); await DB.put(store,obj.id,clean(obj)); Cloud.push(store,obj.id,clean(obj)); }catch(e){ console.warn(e); toast(e&&e.name==='QuotaExceededError'?'This browser is out of storage space. Download a backup and remove a few photos.':"Couldn't save that change."); throw e; } }
+async function saveMeta(){ try{ const m=clean({id:'settings',_t:Date.now(),profileUse:S.profileUse,myVibes:S.myVibes,learn:S.learn,unit:S.gen.unit,hinted:S.hinted,plan:S.plan,trip:S.trip}); await DB.put('meta','settings',m); Cloud.push('meta','settings',m); }catch(e){ console.warn(e); } }
+/* =====================================================================
+   7. CLOUD SYNC (optional) — sign in on any device and see the same closet.
+   Paste your free Supabase project's details here (see SYNC-SETUP.md).
+   ===================================================================== */
+const CLOUD={ url:'', anonKey:'' };   // e.g. url:'https://abcd1234.supabase.co', anonKey:'eyJhbGciOi…' or 'sb_publishable_…'
+function cloudConfig(){
+  if(CLOUD.url&&CLOUD.anonKey) return {...CLOUD,from:'file'};
+  try{ const c=JSON.parse(localStorage.getItem('closet_cloud')||'null'); if(c&&c.url&&c.anonKey) return {...c,from:'settings'}; }catch(e){}
+  return null;
+}
+let sb=null;
+async function loadSupabase(){
+  if(sb) return sb; const cfg=cloudConfig(); if(!cfg) return null;
+  if(window.__supabaseMock){ sb=window.__supabaseMock; return sb; }
+  const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  sb=mod.createClient(cfg.url.trim().replace(/\/+$/,''),cfg.anonKey.trim(),{auth:{persistSession:true,autoRefreshToken:true}});
+  return sb;
+}
+const Cloud={
+  on:false, failed:false, uid:null, email:'', queue:new Map(), timer:null, pulling:false, status:'idle', imgBusy:0,
+  upKey(){ return 'closet_up_'+this.uid; },
+  uploaded(){ try{ return new Set(JSON.parse(localStorage.getItem(this.upKey())||'[]')); }catch(e){ return new Set(); } },
+  markUploaded(ids){ const s=this.uploaded(); ids.forEach(i=>s.add(i)); try{ localStorage.setItem(this.upKey(),JSON.stringify([...s])); }catch(e){} },
+  unmarkUploaded(id){ const s=this.uploaded(); s.delete(id); try{ localStorage.setItem(this.upKey(),JSON.stringify([...s])); }catch(e){} },
+  setStatus(st){ this.status=st; const el=document.getElementById('sync-status'); if(el){ el.textContent=syncLabel(); el.dataset.state=st; } },
+  push(store,id,data){ if(!this.on) return; this.queue.set(store+'\u0001'+id,{store,id,data,deleted:false}); this.schedule(); },
+  remove(store,id){ if(!this.on) return; this.queue.set(store+'\u0001'+id,{store,id,data:null,deleted:true}); this.schedule(); },
+  schedule(){ this.setStatus('saving'); clearTimeout(this.timer); this.timer=setTimeout(()=>this.flush(),900); },
+  async flush(){
+    if(!this.on||!this.queue.size){ if(this.on&&!this.imgBusy) this.setStatus('synced'); return; }
+    const batch=[...this.queue.values()]; this.queue.clear();
+    const now=new Date().toISOString();
+    const rows=batch.map(r=>({user_id:this.uid,store:r.store,id:r.id,data:r.data,deleted:r.deleted,updated_at:now}));
+    try{ const {error}=await sb.from('closet_records').upsert(rows,{onConflict:'user_id,store,id'}); if(error) throw error; this.setStatus(this.imgBusy?'saving':'synced'); }
+    catch(e){ console.warn('sync',e); for(const r of batch){ const k=r.store+'\u0001'+r.id; if(!this.queue.has(k)) this.queue.set(k,r); } this.setStatus('offline'); clearTimeout(this.timer); this.timer=setTimeout(()=>this.flush(),15000); }
+  },
+  path(id){ return this.uid+'/'+id; },
+  async upImage(id,blob){
+    if(!this.on||!blob) return; this.imgBusy++; this.setStatus('saving');
+    try{ const {error}=await sb.storage.from('closet').upload(this.path(id),blob,{upsert:true,contentType:blob.type||'image/jpeg'}); if(error) throw error; this.markUploaded([id]); }
+    catch(e){ console.warn('photo upload',e); this.setStatus('offline'); }
+    finally{ this.imgBusy--; if(!this.imgBusy&&!this.queue.size&&this.status!=='offline') this.setStatus('synced'); }
+  },
+  async rmImage(id){ if(!this.on||!id) return; this.unmarkUploaded(id); try{ await sb.storage.from('closet').remove([this.path(id)]); }catch(e){ console.warn(e); } },
+  /* bring everything from the cloud down to this device, newest version wins */
+  async pull(){
+    if(!this.on||this.pulling) return false; this.pulling=true; this.setStatus('syncing'); let changed=false;
+    try{
+      await this.flush();
+      const rows=[]; for(let from=0;;from+=1000){ const {data,error}=await sb.from('closet_records').select('store,id,data,deleted,updated_at').eq('user_id',this.uid).range(from,from+999); if(error) throw error; rows.push(...(data||[])); if(!data||data.length<1000) break; }
+      const seen=new Set();
+      for(const r of rows){
+        if(!SYNC_STORES.includes(r.store)) continue; seen.add(r.store+'\u0001'+r.id);
+        const local=await DB.get(r.store,r.id); const rt=(r.data&&r.data._t)||Date.parse(r.updated_at)||0, lt=local?(local._t||0):0;
+        if(r.deleted){ if(local&&lt<=Date.parse(r.updated_at)){ await DB.del(r.store,r.id); changed=true; } }
+        else if(!local||lt<rt){ await DB.put(r.store,r.id,r.data); changed=true; }
+        else if(lt>rt) this.push(r.store,r.id,local);
+      }
+      /* anything this device has that the cloud doesn't yet */
+      for(const st of SYNC_STORES){ const keys=await DB.keys(st); for(const k of keys) if(!seen.has(st+'\u0001'+k)){ const v=await DB.get(st,k); if(v) this.push(st,k,v); } }
+      await this.flush();
+      if(changed) await reloadState();
+      this.syncImages();
+      this.setStatus(this.queue.size||this.imgBusy?'saving':'synced');
+    }catch(e){ console.warn('pull',e); this.setStatus('offline'); }
+    finally{ this.pulling=false; }
+    return changed;
+  },
+  /* download photos this device is missing, upload photos the cloud is missing */
+  async syncImages(){
+    const need=new Set(); for(const it of S.items) [it.img,it.photo,it.back,it.backPhoto].forEach(x=>x&&need.add(x)); for(const p of S.pins) p.img&&need.add(p.img); for(const l of S.liked) l.photo&&need.add(l.photo);
+    const missing=[...need].filter(id=>!IMG.urls.has(id)); let got=0;
+    for(const id of missing){ try{ const {data,error}=await sb.storage.from('closet').download(this.path(id)); if(error||!data) continue; await DB.put('images',id,data); IMG.urls.set(id,URL.createObjectURL(data)); this.markUploaded([id]); got++; if(got%6===0) render(); }catch(e){ console.warn(e); } }
+    if(got) render();
+    const up=this.uploaded(); const keys=await DB.keys('images');
+    for(const id of keys) if(!up.has(id)&&need.has(id)){ const b=await DB.get('images',id); if(b) await this.upImage(id,b); }
+  },
+  reset(){ this.on=false; this.uid=null; this.email=''; this.queue.clear(); clearTimeout(this.timer); this.setStatus('idle'); },
+};
+const SYNC_STORES=['items','liked','pins','wear','meta'];
+function syncLabel(){ return {saving:'Saving to your account…',syncing:'Syncing…',synced:'Synced across your devices',offline:'Offline. Changes will sync when you reconnect.',idle:''}[Cloud.status]||''; }
+async function removeRec(store,id){ await DB.del(store,id); Cloud.remove(store,id); }
+async function putRec(store,obj){ obj._t=Date.now(); await DB.put(store,obj.id,clean(obj)); Cloud.push(store,obj.id,clean(obj)); }
+function applyMeta(meta){ if(!meta) return; S.profileUse=meta.profileUse!==false; S.myVibes=meta.myVibes||[]; S.learn=normLearn(meta.learn); S.gen.unit=meta.unit||'F'; S.hinted=!!meta.hinted; S.plan=meta.plan||null; S.trip=meta.trip||null; }
+async function reloadState(){
+  const [items,liked,pins,meta,wear]=await Promise.all([DB.all('items'),DB.all('liked'),DB.all('pins'),DB.get('meta','settings'),DB.all('wear')]);
+  S.items=(items||[]).map(migrateItem); S.liked=liked||[]; S.pins=pins||[]; S.wear=wear||[]; applyMeta(meta); rebuildWearIdx(); render();
+}
+let syncTimer=null;
+function startSyncLoop(){
+  const tick=async()=>{ if(Cloud.on&&document.visibilityState==='visible') await Cloud.pull(); };
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') tick(); else Cloud.flush(); });
+  window.addEventListener('online',()=>{ Cloud.flush(); tick(); });
+  window.addEventListener('pagehide',()=>Cloud.flush());
+  clearInterval(syncTimer); syncTimer=setInterval(tick,60000);
+}
+async function enterCloud(user){
+  Cloud.on=true; Cloud.uid=user.id; Cloud.email=user.email||''; const name=(user.user_metadata&&user.user_metadata.name)||(user.email||'').split('@')[0];
+  await enter('u_'+user.id,name);
+  startSyncLoop(); Cloud.pull();
+}
+/* copies a closet saved in this browser (from before sync) into the signed-in account */
+async function readLocalCloset(user){
+  const db=await new Promise((res,rej)=>{ const r=indexedDB.open('closet_'+user); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); r.onupgradeneeded=()=>{ r.transaction.abort(); rej(new Error('missing')); }; });
+  const all=(st,keys)=>new Promise(res=>{ if(!db.objectStoreNames.contains(st)) return res([]); const t=db.transaction(st,'readonly').objectStore(st); const q=keys?t.getAllKeys():t.getAll(); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); });
+  const [items,liked,pins,wear,meta,imgKeys,imgs]=await Promise.all([all('items'),all('liked'),all('pins'),all('wear'),all('meta'),all('images',true),all('images')]);
+  db.close(); const images={}; imgKeys.forEach((k,i)=>images[k]=imgs[i]);
+  return {items,liked,pins,wear,settings:(meta||[])[0]||null,images};
+}
+async function mergeCloset(d){
+  for(const [k,b] of Object.entries(d.images||{})){ if(!b) continue; await DB.put('images',k,b); if(!IMG.urls.has(k)) IMG.urls.set(k,URL.createObjectURL(b)); Cloud.upImage(k,b); }
+  for(const it of d.items||[]){ await putRec('items',it); }
+  for(const l of d.liked||[]){ await putRec('liked',l); }
+  for(const p of d.pins||[]){ await putRec('pins',p); }
+  for(const w of d.wear||[]){ await putRec('wear',w); }
+  const st=d.settings;
+  if(st){ if(!S.plan&&st.plan) S.plan=st.plan; if(!S.trip&&st.trip) S.trip=st.trip; S.myVibes=[...new Set([...S.myVibes,...(st.myVibes||[])])];
+    const L=normLearn(st.learn); for(const k of ['pairs','items']) Object.assign(S.learn[k],L[k]); for(const k in L.stats) S.learn.stats[k]=(S.learn.stats[k]||0)+L.stats[k]; for(const [g,m] of Object.entries(L.taste)) for(const [k,v] of Object.entries(m)) S.learn.taste[g][k]=clamp((S.learn.taste[g][k]||0)+v,-6,6); }
+  await saveMeta(); await reloadState();
+}
+async function bringInLocal(user,btn){
+  if(btn){ btn.disabled=true; btn.textContent='Copying…'; }
+  try{ const d=await readLocalCloset(user); await mergeCloset(d); toast(`Added ${d.items.length} pieces, ${d.pins.length} pins and ${d.liked.length} liked outfits to your account`); document.querySelector('.back')?.remove(); }
+  catch(e){ console.warn(e); toast("Couldn't read that closet."); if(btn){ btn.disabled=false; btn.textContent='Try again'; } }
+}
+function syncSection(){
+  const cfg=cloudConfig(); const head=h('h3',{style:{fontSize:'24px',fontStyle:'italic',fontWeight:500,marginBottom:'6px'}},'Sync across devices');
+  if(!cfg){
+    const url=h('input',{placeholder:'https://your-project.supabase.co'}), key=h('input',{placeholder:'Your anon or publishable key'});
+    return h('div',{},head,h('p',{class:'muted',style:{margin:'0 0 12px'}},'Right now your closet is saved only in this browser. Connect a free Supabase project (the steps are in SYNC-SETUP.md) and you can sign in on any phone or computer and see the same closet.'),
+      h('div',{class:'pfields',style:{gridTemplateColumns:'1fr'}},h('label',{class:'field'},'Project URL',url),h('label',{class:'field'},'API key',key)),
+      h('div',{style:{marginTop:'12px'}},h('button',{class:'btn primary',onclick:()=>{ const u=url.value.trim(), k=key.value.trim(); if(!/^https:\/\/.+/.test(u)||k.length<20){ toast('Paste both the Project URL and the key from Supabase.'); return; }
+        try{ localStorage.setItem('closet_cloud',JSON.stringify({url:u,anonKey:k})); }catch(e){} toast('Connected. Reloading…'); setTimeout(()=>location.reload(),600); }},'Connect')));
+  }
+  if(!Cloud.on) return h('div',{},head,h('p',{class:'muted',style:{margin:0}},Cloud.failed?"Sync is set up, but your account couldn't be reached. Check your internet connection and reload.":'Sync is set up. Sign out and sign in with your email to use it.'));
+  const locals=Object.entries(Accounts.load().users||{});
+  return h('div',{},head,
+    h('p',{class:'muted',style:{margin:'0 0 10px'}},`Signed in as ${Cloud.email}. Everything you add is saved to your account and shows up on every device where you sign in.`),
+    h('p',{style:{margin:'0 0 12px'}},h('span',{class:'sync-pill',id:'sync-status','data-state':Cloud.status},syncLabel()||'Synced across your devices')),
+    h('button',{class:'btn sm',onclick:async()=>{ await Cloud.pull(); toast('Up to date'); }},'Sync now'),
+    locals.length?h('div',{style:{marginTop:'16px'}},h('p',{style:{margin:'0 0 8px'}},'Closets saved in this browser before sync. Copy one into your account so it appears on all your devices:'),
+      h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}},locals.map(([u,info])=>h('button',{class:'btn sm',onclick:e=>bringInLocal(u,e.currentTarget)},`Bring in ${info.name||u}'s closet`)))):null,
+    cfg.from==='settings'?h('div',{style:{marginTop:'14px'}},h('button',{class:'linkbtn',onclick:async()=>{ try{ localStorage.removeItem('closet_cloud'); }catch(e){} await signOut(); location.reload(); }},'Disconnect sync on this device')):null);
+}
+
 
 /* ---------- app state ---------- */
 const S={
   user:null, items:[], liked:[], pins:[], wear:[], wearIdx:new Map(), wornKeys:new Set(), plan:null, trip:null, look:'collage', profileUse:true, myVibes:[], learn:{pairs:{},items:{}}, hinted:false,
   view:'closet', cat:'all', color:null, sort:'newest', q:'',
   gen:{ mode:'today', occasion:'university', custom:'', cond:'sunny', condText:'', tempF:65, unit:'F', forecast:null, anchor:null, pin:null,
-        adj:{form:0,warm:0,strict:false,forceOuter:false}, avoidColors:new Set(), avoidItems:new Set(), recent:new Map(),
+        adj:{form:0,warm:0,strict:false,forceOuter:false}, avoidColors:new Set(), wantColors:new Set(), avoidItems:new Set(), recent:new Map(),
         seen:new Set(), queue:[], current:null, selected:null, phase:'idle', collapsed:false, tab:'pieces' },
 };
 const I=id=>S.items.find(i=>i.id===id);
 const subOf=it=>SUB[it.sub]||null;
+
+/* ---------- sweaters and layering ---------- */
+const isLayerKnit=it=>!!it&&it.category==='sweaters'&&flagsOf(it).has('layer');
+const vestOnly=it=>!!it&&flagsOf(it).has('vestonly');
+const VEST_BASES=new Set(['button-up','oxford','tee','long-sleeve','turtleneck','polo','linen-shirt','shirt-dress','peasant']);
+const NO_LAYER=new Set(['hoodie','sweatshirt','corset']);
+/* can this knit go over this outfit's top or dress? */
+function layerOK(o,knit){
+  const base=I(o.top)||I(o.dress); if(!base||!knit||base.id===knit.id) return false;
+  const bk=keyOf(base); if(NO_LAYER.has(bk)) return false;
+  if(isLayerKnit(base)) return knit.sub==='cardigan'&&base.sub==='thin-sweater';   /* only a cardigan over a thin sweater */
+  if(vestOnly(knit)) return VEST_BASES.has(bk);
+  return true;
+}
+/* move pieces saved before the Sweaters type existed */
+function migrateItem(it){
+  if(!it) return it;
+  if((it.category==='tops'&&['sweater','turtleneck','knit-vest'].includes(it.sub))||(it.category==='outerwear'&&it.sub==='cardigan')){ it.category='sweaters'; it._migrated=true; }
+  return it;
+}
 const slotOf=it=>it.category==='other'?(it.otherSlot||'acc'):CAT[it.category]?.slot;
 const keyOf=it=>it.sub||it.category;
 const vibesOf=it=>(it.vibes&&it.vibes.length)?it.vibes:(subOf(it)?.v||[]);
@@ -1117,7 +1437,7 @@ const fitLabel=it=>it.fit==='other'?(it.fitLabel||'Something else'):cap(it.fit||
    ===================================================================== */
 const MAIN_SLOTS=['outer','sweater','top','dress','bottom','shoes'];
 function piecesOf(o){ return MAIN_SLOTS.filter(k=>o[k]&&I(o[k])).map(k=>({slot:k,it:I(o[k])})); }
-function comboKey(o){ return [o.top,o.bottom,o.dress,o.outer,o.shoes].filter(Boolean).sort().join('+'); }
+function comboKey(o){ return [o.top,o.bottom,o.dress,o.outer,o.sweater,o.shoes].filter(Boolean).sort().join('+'); }
 function requiredWarmth(t){ return t>=82?1.1:t>=74?1.7:t>=66?2.4:t>=58?3.2:t>=48?4:t>=38?4.8:5.6; }
 function resolveOcc(){ const g=S.gen; return g.occasion!=='custom'?OCC[g.occasion]:occFromText(g.custom); }
 function occFromText(text){
@@ -1136,7 +1456,7 @@ function makeCtx(opts={}){
   const prof=S.profileUse?buildProfile():null;
   return { occ, T:clamp(occ.f+(opts.fresh?0:g.adj.form),.5,5), t, R:requiredWarmth(t)+(opts.fresh?0:g.adj.warm*.7), cond, planUse:opts.planUse||null, trip:!!opts.trip,
     wet:cond==='rainy'||cond==='snowy', snow:cond==='snowy', windy:cond==='windy'||(g.forecast&&g.forecast.wind>=18), sunny:cond==='sunny',
-    strict:opts.fresh?false:g.adj.strict, forceOuter:opts.fresh?false:g.adj.forceOuter, avoidColors:opts.fresh?new Set():g.avoidColors, avoidItems:opts.avoid||(opts.fresh?new Set():g.avoidItems),
+    strict:opts.fresh?false:g.adj.strict, forceOuter:opts.fresh?false:g.adj.forceOuter, avoidColors:opts.fresh?new Set():g.avoidColors, wantColors:opts.fresh?new Set():g.wantColors, avoidItems:opts.avoid||(opts.fresh?new Set():g.avoidItems),
     prof, pin:opts.pin||null, fit:new Map() };
 }
 /* How well a single piece suits the occasion, weather and taste */
@@ -1159,6 +1479,8 @@ function itemFit(it,ctx){
   if(ctx.prof) s+=WEIGHTS.profile*profileColorBonus(pc(it),ctx.prof)*(slot==='acc'?.3:.6);
   if(ctx.prof&&BOLD_PATTERNS.has(it.pattern)) s+=(ctx.prof.busy-.35)*.8*ctx.prof.strength;
   s+=WEIGHTS.learned*clamp(S.learn.items[it.id]||0,-3,3)*.25;
+  s+=WEIGHTS.learned*clamp(tasteItemBonus(it)*.15,-1.2,1.2)*(slot==='acc'?.5:1);
+  if(ctx.wantColors&&ctx.wantColors.has(pc(it).fam)) s+=1.5;
   s-=WEIGHTS.variety*(S.gen.recent.get(it.id)||0)*.9;
   if(ctx.avoidColors.has(pc(it).fam)) s-=2.2;
   if(ctx.avoidItems.has(it.id)) s-=1.2;
@@ -1185,13 +1507,13 @@ function pairColor(c1,c2){
   return {s:(c1.C>55&&c2.C>55)?.15:.5,kind:'complementary'};
 }
 function hueGroups(P){
-  const hs=[]; const wts={top:1,bottom:1,dress:1.6,outer:.9,shoes:.5};
+  const hs=[]; const wts={top:1,sweater:1,bottom:1,dress:1.6,outer:.9,shoes:.5};
   for(const p of P){ (p.it.colors||[pc(p.it)]).forEach((c,i)=>{ if(i===0||c.w>=.22){ if(!isNeutral(c)) hs.push({h:c.h,fam:c.fam,w:(wts[p.slot]||.5)*(i===0?1:c.w)}); } }); }
   const groups=[]; for(const x of hs.sort((a,b)=>b.w-a.w)){ const g=groups.find(g=>hueDiff(g.h,x.h)<28); if(g) g.w+=x.w; else groups.push({h:x.h,fam:x.fam,w:x.w}); }
   return groups.sort((a,b)=>b.w-a.w);
 }
 function colorScore(P,why){
-  const wts={top:1,bottom:1,dress:1.7,outer:.85,shoes:.55};
+  const wts={top:1,sweater:.95,bottom:1,dress:1.7,outer:.85,shoes:.55};
   let s=0,tw=0; const kinds={};
   for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){ const r=pairColor(pc(P[i].it),pc(P[j].it)), w=(wts[P[i].slot]||.5)*(wts[P[j].slot]||.5); s+=r.s*w; tw+=w; kinds[r.kind]=(kinds[r.kind]||0)+w; }
   s=tw?s/tw*2:0;
@@ -1221,7 +1543,11 @@ function patternScore(P,ctx,why){
 const FORMULAS=[
  {need:['blazer','tee|long-sleeve|turtleneck|bodysuit','straight|wide-jeans|skinny|mom'],v:.6,t:'Blazer, simple top and jeans is a smart-casual classic'},
  {need:['leather-jacket','slip|midi|mini|sundress|maxi|midi-skirt'],v:.5,t:'The leather jacket gives the soft piece an edge'},
- {need:['cardigan','cami|bodysuit|tee|turtleneck'],v:.3,t:'A cardigan over a simple top always works'},
+ {need:['cardigan','cami|bodysuit|tee|turtleneck|slip|sundress|silk-blouse'],v:.4,t:'A cardigan over a simple top always works'},
+ {need:['knit-vest','button-up|oxford|polo|long-sleeve|turtleneck|linen-shirt'],v:.55,t:'A sweater vest over a shirt is a preppy classic'},
+ {need:['sweater|thin-sweater|quarter-zip','button-up|oxford'],v:.45,t:'A crisp collar peeking out of a sweater looks polished'},
+ {need:['turtleneck','blazer|wool-coat|leather-jacket|trench|cardigan|knit-vest'],v:.4,t:'A turtleneck makes a sleek base for the layer on top'},
+ {need:['thin-sweater|sweater','slip|midi-skirt|pleated'],v:.35,t:'Knitwear softens a dressier piece'},
  {need:['button-up|oxford','trousers|wide-leg|pleated|midi-skirt'],v:.45,t:'A crisp shirt with tailored bottoms looks polished'},
  {need:['sweater|turtleneck','midi-skirt|pleated|maxi-skirt|leather-pants'],v:.4,t:'Knitwear with a skirt is cozy but put together'},
  {need:['silk-blouse|cami|corset|bodysuit','wide-leg|trousers|leather-pants'],v:.45,t:'A dressy top with sharp trousers is easy evening wear'},
@@ -1235,6 +1561,8 @@ const FORMULAS=[
  {need:['oversized-top','fitted-bottom'],v:0,t:''},
 ];
 const CLASHES=[
+ {a:'knit-vest',b:'tank|cami|corset|crop|graphic-tee',v:-.9},
+ {a:'sweater',b:'puffer|fleece',v:-.2},
  {a:'hoodie|sweatshirt',b:'blazer|wool-coat|trench',v:-.7},
  {a:'joggers|leggings|athletic-shorts|bike',b:'blazer|pumps|strappy|loafers|silk-blouse|wool-coat',v:-1},
  {a:'gown|cocktail',b:'sneakers|running|clean-sneakers|combat|rain-boots|puffer|hoodie',v:-1.2},
@@ -1283,7 +1611,7 @@ function vibeScore(P,ctx,why){
 }
 function profileScore(P,groups,ctx,why){
   const pr=ctx.prof; if(!pr) return 0; let s=0, best=null, bestD=1e9;
-  const wts={top:1,bottom:1,dress:1.6,outer:.8,shoes:.4};
+  const wts={top:1,sweater:.9,bottom:1,dress:1.6,outer:.8,shoes:.4};
   for(const p of P){ const c=pc(p.it); for(const q of pr.palette){ const d=dE(c,q); if(d<bestD){bestD=d;best=c;} } const near=Math.min(...pr.palette.map(q=>dE(c,q))); s+=Math.max(0,1-near/38)*.45*(wts[p.slot]||.5); }
   if(pr.colorful<.22){ if(groups.length>=2) s-=.6; else if(groups.length===0) s+=.3; }
   if(pr.colorful>.5){ if(groups.length===0) s-=.35; else s+=.3; }
@@ -1298,14 +1626,26 @@ function pinScore(P,pin,why){
   const pieceClose=cols.reduce((t,c)=>t+Math.max(0,1-Math.min(...pin.palette.map(q=>dE(c,q)))/32),0)/cols.length;
   const s=1.6*(cov/(tw||1))+.6*pieceClose-.5; if(s>.3) why(s,'Recreates the colors of the pin you picked','pin'); return s;
 }
-function learnedScore(P,why){
-  let s=0; for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++) s+=S.learn.pairs[pairKey(P[i].it.id,P[j].it.id)]||0;
-  s=clamp(s*.35,-1.5,1.5); if(s>.5) why(.5,'Built on pairings you have liked before','learned'); return s;
+function learnedScore(P,why,o,kinds){
+  const T=S.learn.taste; let s=0;
+  for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++) s+=(S.learn.pairs[pairKey(P[i].it.id,P[j].it.id)]||0)*.35;
+  s=clamp(s,-1.5,1.5); if(s>.5) why(.5,'Built on pairings you have liked before','learned');
+  let fp=0, sp=0; const main=P.filter(p=>p.slot!=='shoes');
+  for(let i=0;i<main.length;i++) for(let j=i+1;j<main.length;j++){ const a=main[i].it, b=main[j].it; fp+=T.famPair[[pc(a).fam,pc(b).fam].sort().join('+')]||0; sp+=T.subPair[[keyOf(a),keyOf(b)].sort().join('+')]||0; }
+  fp=clamp(fp*.18,-1.2,1.2); sp=clamp(sp*.2,-1.2,1.2); s+=fp+sp;
+  if(fp>.6) why(fp,'A color pairing you keep coming back to','taste-c'); if(sp>.6) why(sp,'A combination you like to wear','taste-s');
+  if(kinds){ const top=Object.entries(kinds).sort((x,y)=>y[1]-x[1])[0]; if(top) s+=clamp((T.kind[top[0]]||0)*.12,-.6,.6); }
+  if(o){ const fs=featuresOf(o), ck=comboKey(o); let best=0, photo=false;
+    for(const l of likedFeatures()){ let sim=similarity(fs,l.f); if(l.combo===ck) sim=Math.min(sim,.55); if(l.photo) sim*=1.15; if(sim>best){ best=sim; photo=l.photo; } }
+    const lb=clamp((best-.32)*2.4,0,1.2); s+=lb; if(lb>.45) why(lb,photo?'Close to an outfit from your photos':"Close to outfits you've liked",'similar');
+    let worst=0; for(const nf of S.learn.nope||[]){ const sim=similarity(fs,new Set(nf)); if(sim>worst) worst=sim; } s-=clamp((worst-.35)*2.6,0,1.4); }
+  return s;
 }
 const pairKey=(a,b)=>a<b?a+'|'+b:b+'|'+a;
 function scoreOutfit(o,ctx,explain){
   const P=piecesOf(o); const R=[], tips=[]; const why=explain?(v,t,kind)=>{ if(t) R.push({v,t,kind}); }:()=>{};
-  let s=0; for(const p of P){ if(!ctx.fit.has(p.it.id)) ctx.fit.set(p.it.id,itemFit(p.it,ctx)); s+=ctx.fit.get(p.it.id)*(p.slot==='outer'?.8:p.slot==='shoes'?.8:1); }
+  let s=0; for(const p of P){ if(!ctx.fit.has(p.it.id)) ctx.fit.set(p.it.id,itemFit(p.it,ctx)); s+=ctx.fit.get(p.it.id)*(p.slot==='outer'?.8:p.slot==='shoes'?.8:p.slot==='sweater'?.75:1); }
+  if(o.sweater&&!layerOK(o,I(o.sweater))) s-=4;
   const fs=P.map(p=>fOf(p.it)); const spread=Math.max(...fs)-Math.min(...fs); if(spread>2) s-=(spread-2)*.9;
   const avgF=fs.reduce((a,b)=>a+b,0)/fs.length; if(Math.abs(avgF-ctx.T)<.6) why(.5,`The right level of polish for ${ctx.occ.p}`,'formality');
   const col=colorScore(P,why); s+=WEIGHTS.color*col.s;
@@ -1316,7 +1656,7 @@ function scoreOutfit(o,ctx,explain){
   s+=WEIGHTS.vibe*vibeScore(P,ctx,why);
   s+=WEIGHTS.profile*profileScore(P,col.groups,ctx,why);
   s+=WEIGHTS.pin*pinScore(P,ctx.pin,why);
-  s+=WEIGHTS.learned*learnedScore(P,why);
+  s+=WEIGHTS.learned*learnedScore(P,why,o,col.kinds);
   return explain?{s,reasons:R,tips,groups:col.groups,kinds:col.kinds}:s;
 }
 /* Accessories */
@@ -1362,7 +1702,7 @@ function generate(n,opts={}){
   for(const it of S.items) ctx.fit.set(it.id,itemFit(it,ctx));
   const pool=slot=>{ const all=S.items.filter(i=>slotOf(i)===slot&&!i.laundry).sort((a,b)=>ctx.fit.get(b.id)-ctx.fit.get(a.id)); const ok=all.filter(i=>ctx.fit.get(i.id)>-5); return ok.length||slot==='dress'||slot==='outer'?ok:all.slice(0,3); };
   const take=(arr,k)=>{ const top=arr.slice(0,k), rest=arr.slice(k); for(let i=0;i<3&&rest.length;i++) top.push(rest.splice(Math.floor(Math.random()*rest.length),1)[0]); return top; };
-  let tops=take(pool('top'),9), bottoms=take(pool('bottom'),9), dresses=take(pool('dress'),7), outers=take(pool('outer'),6), shoes=take(pool('shoes'),6);
+  let tops=take(pool('top').filter(i=>!vestOnly(i)),9), bottoms=take(pool('bottom'),9), dresses=take(pool('dress'),7), outers=take(pool('outer'),6), shoes=take(pool('shoes'),6);
   if(aslot==='top'){ tops=[anchor]; dresses=[]; } if(aslot==='bottom'){ bottoms=[anchor]; dresses=[]; } if(aslot==='dress'){ dresses=[anchor]; tops=[]; bottoms=[]; }
   if(aslot==='outer') outers=[anchor]; if(aslot==='shoes') shoes=[anchor];
   const bases=[]; for(const t of tops) for(const b of bottoms) bases.push({top:t.id,bottom:b.id}); for(const d of dresses) bases.push({dress:d.id});
@@ -1370,16 +1710,19 @@ function generate(n,opts={}){
   if(!bases.length) return [];
   const noise=()=>Math.random()*WEIGHTS.randomness;
   const ranked=bases.map(b=>({b,s:scoreOutfit(b,ctx)+noise()})).sort((x,y)=>y.s-x.s).slice(0,40);
-  const outerOpts=aslot==='outer'?outers:[null,...outers], shoeOpts=shoes.length?shoes:[null];
+  const outerOpts=aslot==='outer'?outers:[null,...outers], shoeOpts=shoes.length?shoes.slice(0,5):[null];
+  const knits=S.items.filter(i=>isLayerKnit(i)&&!i.laundry).sort((a,b)=>ctx.fit.get(b.id)-ctx.fit.get(a.id)).slice(0,4);
+  const layerAnchor=anchor&&vestOnly(anchor)?anchor:null;
   const cands=[];
-  for(const {b} of ranked){ let best=null;
-    for(const sh of shoeOpts) for(const ou of outerOpts){ const o={...b,shoes:sh?sh.id:null,outer:ou?ou.id:null,accessories:[]}; const sc=scoreOutfit(o,ctx)+noise()-(S.wornKeys.has(comboKey(o))?2:0); if(!best||sc>best.sc) best={o,sc}; }
+  for(const {b} of ranked.slice(0,30)){ let best=null;
+    const lay=layerAnchor?[layerAnchor]:[null,...knits.filter(k=>layerOK(b,k))];
+    for(const sh of shoeOpts) for(const ou of outerOpts) for(const sw of lay){ const o={...b,shoes:sh?sh.id:null,outer:ou?ou.id:null,sweater:sw?sw.id:null,accessories:[]}; const sc=scoreOutfit(o,ctx)+noise()-(S.wornKeys.has(comboKey(o))?2:0); if(!best||sc>best.sc) best={o,sc}; }
     if(best) cands.push(best); }
   cands.sort((a,b)=>b.sc-a.sc);
   const chosen=[];
   for(let k=0;k<n;k++){ let pick=null,ps=-1e9;
     for(const c of cands){ const key=comboKey(c.o); if((!opts.ignoreSeen&&g.seen.has(key))||chosen.some(x=>comboKey(x.o)===key)) continue;
-      let sc=c.sc; for(const x of chosen) for(const sl of ['top','bottom','dress','outer']) if(c.o[sl]&&x.o[sl]===c.o[sl]&&c.o[sl]!==opts.anchor) sc-=1.1;
+      let sc=c.sc; for(const x of chosen) for(const sl of ['top','bottom','dress','outer','sweater']) if(c.o[sl]&&x.o[sl]===c.o[sl]&&c.o[sl]!==opts.anchor) sc-=1.1;
       if(sc>ps){ps=sc;pick=c;} }
     if(!pick) break; chosen.push(pick); }
   return chosen.map(c=>{ const o={...c.o}; if(aslot==='acc') o.accessories=[anchor.id]; o.accessories=[...o.accessories,...pickAccessories(o,ctx,o.accessories.length?1:(ctx.T>=3.5?2:1))]; return finalize(o,ctx,'stylist'); });
@@ -1394,9 +1737,34 @@ function pairsWellWith(it){
     if(BOLD_PATTERNS.has(it.pattern)&&BOLD_PATTERNS.has(x.pattern)) s-=.6;
     if(slotOf(x)==='acc') s-=.3; return {x,s}; }).sort((a,b)=>b.s-a.s).slice(0,6).map(r=>r.x);
 }
+
+/* ---------- taste: what you like and dislike, learned from everything you do ---------- */
+const TASTE_GROUPS=['fam','pat','vibe','sub','famPair','subPair','kind'];
+function normLearn(l){ l=l||{}; const t=l.taste||{}; const taste={}; for(const g of TASTE_GROUPS) taste[g]={...(t[g]||{})};
+  return {pairs:{...(l.pairs||{})},items:{...(l.items||{})},taste,nope:(l.nope||[]).slice(-25),stats:{like:0,choose:0,wear:0,photo:0,pass:0,nope:0,...(l.stats||{})}}; }
+function tasteUpdate(o,amt){
+  const T=S.learn.taste; for(const g of TASTE_GROUPS) for(const k in T[g]){ T[g][k]*=.985; if(Math.abs(T[g][k])<.03) delete T[g][k]; }
+  const add=(g,k,v)=>{ if(k) T[g][k]=+clamp((T[g][k]||0)+v,-6,6).toFixed(3); };
+  const P=piecesOf(o); if(!P.length) return;
+  for(const p of P){ const it=p.it; add('fam',pc(it).fam,amt*.6); add('sub',keyOf(it),amt*.6); if(BOLD_PATTERNS.has(it.pattern)) add('pat',it.pattern,amt*.5);
+    const vs=vibesOf(it); vs.forEach(v=>add('vibe',v,amt*.5/vs.length)); }
+  const main=P.filter(p=>p.slot!=='shoes');
+  for(let i=0;i<main.length;i++) for(let j=i+1;j<main.length;j++){ const a=main[i].it, b=main[j].it;
+    add('famPair',[pc(a).fam,pc(b).fam].sort().join('+'),amt*.5); add('subPair',[keyOf(a),keyOf(b)].sort().join('+'),amt*.5); }
+  const kinds=colorScore(P,()=>{}).kinds; const top=Object.entries(kinds).sort((a,b)=>b[1]-a[1])[0]; if(top) add('kind',top[0],amt*.4);
+}
+function featuresOf(o){ const f=[]; for(const p of piecesOf(o)){ const it=p.it; f.push('i:'+it.id,p.slot+':'+pc(it).fam,p.slot+':'+keyOf(it),'v:'+(vibesOf(it)[0]||'')); } return f; }
+let likedFeatCache={key:'',list:[]};
+function likedFeatures(){ const key=S.liked.map(l=>l.id).join(',');
+  if(likedFeatCache.key!==key) likedFeatCache={key,list:S.liked.map(l=>({f:new Set(featuresOf(l)),photo:l.source==='photo',combo:comboKey(l)}))}; return likedFeatCache.list; }
+function similarity(fs,set){ let n=0; for(const x of fs) if(set.has(x)) n++; return n/(fs.length+set.size-n||1); }
+function tasteItemBonus(it){ const T=S.learn.taste; const vs=vibesOf(it);
+  return (T.fam[pc(it).fam]||0)+(T.sub[keyOf(it)]||0)+(BOLD_PATTERNS.has(it.pattern)?(T.pat[it.pattern]||0)*.7:0)+(vs.length?vs.reduce((t,v)=>t+(T.vibe[v]||0),0)/vs.length:0); }
 /* Learning from your choices */
-function learnFrom(o,amount){
-  const ids=[o.top,o.bottom,o.dress,o.outer,o.shoes,...(o.accessories||[])].filter(Boolean);
+function learnFrom(o,amount,src){
+  if(src&&S.learn.stats) S.learn.stats[src]=(S.learn.stats[src]||0)+1;
+  tasteUpdate(o,amount);
+  const ids=[o.top,o.bottom,o.dress,o.outer,o.sweater,o.shoes,...(o.accessories||[])].filter(Boolean);
   for(let i=0;i<ids.length;i++){ S.learn.items[ids[i]]=clamp((S.learn.items[ids[i]]||0)+amount*.5,-4,4); for(let j=i+1;j<ids.length;j++){ const k=pairKey(ids[i],ids[j]); S.learn.pairs[k]=clamp((S.learn.pairs[k]||0)+amount,-4,4); } }
   saveMeta();
 }
@@ -1413,7 +1781,7 @@ function render(){
   const rail=h('nav',{class:'rail','aria-label':'Main'},h('div',{class:'brand'},h('span',{class:'arch-mark'}),'Closet'),h('div',{class:'brand-rule'},h('i',{})),
     NAV.map(n=>h('button',{class:'navbtn','aria-current':S.view===n.k?'page':null,onclick:()=>go(n.k)},icon(n.ic),n.label,
       n.k==='inspiration'?(S.pins.length?h('span',{class:'count'},S.pins.length):h('span',{class:'tag'},'Pinterest')):counts[n.k]!=null?h('span',{class:'count'},counts[n.k]):null)),
-    h('div',{class:'rail-foot'},h('div',{class:'who'},'Signed in as ',h('b',{},S.userName)),h('button',{class:'linkbtn',onclick:openSettings},'Colors, backup and settings')));
+    h('div',{class:'rail-foot'},h('div',{class:'who'},'Signed in as ',h('b',{},S.userName)),Cloud.on?h('div',{class:'sync-pill',id:'sync-status','data-state':Cloud.status},syncLabel()):null,h('button',{class:'linkbtn',onclick:openSettings},'Colors, backup and settings')));
   const tabbar=h('nav',{class:'tabbar','aria-label':'Main'},NAV.map(n=>h('button',{'aria-current':S.view===n.k?'page':null,onclick:()=>go(n.k)},icon(n.ic),n.label)));
   const views={closet:viewCloset,outfits:viewOutfits,journal:viewJournal,inspiration:viewInspiration,liked:viewLiked};
   const prev=document.querySelector('main')?.scrollTop||0;
@@ -1426,6 +1794,7 @@ function dotsOf(it){ return h('span',{class:'dots'},(it.colors||[pc(it)]).slice(
 
 /* ---------- accounts (like Loom: stored on this device) ---------- */
 function viewAuth(){
+  if(cloudConfig()&&!Cloud.failed) return viewCloudAuth();
   const acc=Accounts.load(); const users=Object.keys(acc.users); let signup=!users.length;
   const wrap=h('div',{class:'auth'});
   const paint=()=>{
@@ -1450,16 +1819,41 @@ function viewAuth(){
   };
   paint(); return wrap;
 }
+function viewCloudAuth(){
+  let signup=false; const wrap=h('div',{class:'auth'});
+  const paint=(msg)=>{
+    const name=h('input',{placeholder:'e.g. Ro',autocomplete:'name'}), email=h('input',{type:'email',placeholder:'you@example.com',autocomplete:'email'}), pass=h('input',{type:'password',placeholder:'At least 6 characters',autocomplete:signup?'new-password':'current-password'});
+    const err=h('div',{class:'err'},msg||''); const btn=h('button',{class:'btn primary',style:{height:'48px'}},signup?'Create account':'Sign in');
+    const submit=async()=>{ const e=email.value.trim(), p=pass.value; if(!e||!p){ err.textContent='Enter your email and password.'; return; }
+      btn.disabled=true; btn.textContent=signup?'Creating…':'Signing in…';
+      try{ const c=await loadSupabase();
+        if(signup){ const {data,error}=await c.auth.signUp({email:e,password:p,options:{data:{name:name.value.trim()||e.split('@')[0]}}}); if(error) throw error;
+          if(!data.session){ signup=false; paint('Almost there: check your email and tap the confirmation link, then sign in here.'); return; } await enterCloud(data.session.user); }
+        else { const {data,error}=await c.auth.signInWithPassword({email:e,password:p}); if(error) throw error; await enterCloud(data.user||data.session.user); } }
+      catch(x){ console.warn(x); err.textContent=/invalid login/i.test(x.message||'')?'Wrong email or password.':/confirm/i.test(x.message||'')?'Please confirm your email first, using the link Supabase sent you.':(x.message||"Couldn't reach your account. Check your connection."); btn.disabled=false; btn.textContent=signup?'Create account':'Sign in'; } };
+    btn.onclick=submit; [name,email,pass].forEach(i=>i.addEventListener('keydown',ev=>{ if(ev.key==='Enter') submit(); }));
+    wrap.replaceChildren(
+      h('div',{class:'auth-art'},h('div',{class:'arch-window'},h('div',{},h('div',{class:'big'},'Closet'),h('p',{},'Your wardrobe, photographed and styled. Sign in on any device and your closet is there.'))),
+        h('p',{class:'foot-note'},'Synced to your private account.')),
+      h('div',{class:'auth-form'},h('div',{class:'auth-card'},
+        h('h1',{},signup?'Create your closet':'Welcome back'),
+        signup?h('label',{class:'field'},'Your name',name):null,
+        h('label',{class:'field'},'Email',email),h('label',{class:'field'},'Password',pass),err,btn,
+        h('p',{class:'muted',style:{margin:0,fontSize:'14px'}},signup?'Already have an account? ':'New here? ',h('button',{class:'linkbtn',onclick:()=>{signup=!signup;paint();}},signup?'Sign in':'Create an account')))));
+  };
+  paint(); return wrap;
+}
 async function enter(user,name){
   root.replaceChildren(h('div',{class:'boot'},h('span',{},'Closet')));
   IMG.clear(); await DB.open(user); await IMG.preload();
   const [items,liked,pins,meta,wear]=await Promise.all([DB.all('items'),DB.all('liked'),DB.all('pins'),DB.get('meta','settings'),DB.all('wear')]);
-  S.user=user; S.userName=name||user; S.items=items||[]; S.liked=liked||[]; S.pins=pins||[]; S.wear=wear||[]; rebuildWearIdx();
-  if(meta){ S.profileUse=meta.profileUse!==false; S.myVibes=meta.myVibes||[]; S.learn=meta.learn||{pairs:{},items:{}}; S.gen.unit=meta.unit||'F'; S.hinted=!!meta.hinted; S.look=meta.look||'collage'; S.plan=meta.plan||null; S.trip=meta.trip||null; }
+  S.user=user; S.userName=name||user; S.items=(items||[]).map(migrateItem); S.liked=liked||[]; S.pins=pins||[]; S.wear=wear||[]; rebuildWearIdx();
+  S.learn=normLearn(null); applyMeta(meta);
+  for(const it of S.items) if(it._migrated){ delete it._migrated; persist('items',it).catch(()=>{}); }
   S.view='closet'; render();
   if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 }
-function signOut(){ const a=Accounts.load(); a.session=null; Accounts.save(a); S.user=null; S.items=[]; S.liked=[]; S.pins=[]; IMG.clear(); document.querySelector('.back')?.remove(); render(); }
+async function signOut(){ if(Cloud.on){ await Cloud.flush(); try{ await sb.auth.signOut(); }catch(e){} Cloud.reset(); } const a=Accounts.load(); a.session=null; Accounts.save(a); S.user=null; S.items=[]; S.liked=[]; S.pins=[]; IMG.clear(); document.querySelector('.back')?.remove(); render(); }
 
 /* ---------- closet ---------- */
 function sortedItems(){
@@ -1676,7 +2070,7 @@ function openDetail(it){
       h('div',{class:'dactions'},
         h('button',{class:'btn primary',onclick:()=>{ styles=outfitsForItem(it); paint(); setTimeout(()=>m.modal.querySelector('#styles')?.scrollIntoView({behavior:'smooth',block:'start'}),40); }},icon('spark'),styles?'Show different styles':'Styles'),
         confirmDel?h('div',{class:'row'},h('span',{style:{fontSize:'14px',flex:'1'}},'Delete this piece for good?'),h('button',{class:'btn sm',onclick:()=>{confirmDel=false;paint();}},'Keep'),
-            h('button',{class:'btn sm danger',onclick:async()=>{ try{ await DB.del('items',it.id); await IMG.del(it.img); if(it.photo!==it.img) await IMG.del(it.photo); if(it.back&&it.back!==it.backPhoto) await IMG.del(it.back); if(it.backPhoto) await IMG.del(it.backPhoto); S.items=S.items.filter(x=>x!==it); m.close(); toast('Piece deleted'); }catch(e){ toast("Couldn't delete that piece."); } }},'Delete'))
+            h('button',{class:'btn sm danger',onclick:async()=>{ try{ await removeRec('items',it.id); await IMG.del(it.img); if(it.photo!==it.img) await IMG.del(it.photo); if(it.back&&it.back!==it.backPhoto) await IMG.del(it.back); if(it.backPhoto) await IMG.del(it.backPhoto); S.items=S.items.filter(x=>x!==it); m.close(); toast('Piece deleted'); }catch(e){ toast("Couldn't delete that piece."); } }},'Delete'))
           :h('div',{class:'row'},h('button',{class:'btn',onclick:()=>{editing=true;paint();}},'Edit details'),h('button',{class:'btn danger',onclick:()=>{confirmDel=true;paint();}},'Delete')),
         h('button',{class:'btn'+(it.laundry?' accent':''),onclick:async()=>{ await setLaundry(it,!it.laundry); toast(it.laundry?'Marked as in the laundry. Outfits will skip it.':'Back in the closet'); paint(); }},it.laundry?'Back in the closet':'Put in the laundry')));
   }
@@ -1834,7 +2228,7 @@ document.addEventListener('keydown',e=>{
 });
 function markSeen(o){ const g=S.gen; g.seen.add(comboKey(o)); for(const k of ['top','bottom','dress','outer','shoes']) if(o[k]) g.recent.set(o[k],(g.recent.get(o[k])||0)+1); }
 function startGenerating(){
-  const g=S.gen; g.adj={form:0,warm:0,strict:false,forceOuter:false}; g.avoidColors=new Set(); g.avoidItems=new Set(); g.queue=[]; g.anchor=null; g.selected=null;
+  const g=S.gen; g.adj={form:0,warm:0,strict:false,forceOuter:false}; g.avoidColors=new Set(); g.wantColors=new Set(); g.avoidItems=new Set(); g.queue=[]; g.anchor=null; g.selected=null;
   if(window.matchMedia('(max-width: 899px)').matches) g.collapsed=true; nextOutfit();
 }
 function nextOutfit(){
@@ -1866,11 +2260,15 @@ function applyFeedback(k,o){
     if(x==='no-shoes'&&o.shoes) g.avoidItems.add(o.shoes);
     if(x==='no-outer'&&o.outer) g.avoidItems.add(o.outer);
     if(x==='color') ['top','bottom','dress','outer'].forEach(sl=>{ const it=I(o[sl]); if(it&&it.id!==g.anchor) g.avoidColors.add(pc(it).fam); });
+    if(x.startsWith('avoid:')){ const f=x.slice(6); g.avoidColors.add(f); S.learn.taste.fam[f]=clamp((S.learn.taste.fam[f]||0)-1.5,-6,6); }
+    if(x.startsWith('want:')){ const f=x.slice(5); g.wantColors.add(f); g.avoidColors.delete(f); S.learn.taste.fam[f]=clamp((S.learn.taste.fam[f]||0)+1,-6,6); }
   }
-  if(ks.includes('color')) learnFrom({top:o.top,bottom:o.bottom,dress:o.dress,outer:o.outer},-.6); else learnFrom({top:o.top,bottom:o.bottom,dress:o.dress},-.15);
+  if(ks.includes('nope')){ learnFrom(o,-1,'nope'); S.learn.nope=[...(S.learn.nope||[]),featuresOf(o)].slice(-25); ['outer','sweater','shoes'].forEach(sl=>{ if(o[sl]&&o[sl]!==g.anchor) g.avoidItems.add(o[sl]); }); saveMeta(); }
+  else if(ks.includes('color')||ks.some(x=>x.startsWith('avoid:'))) learnFrom({top:o.top,bottom:o.bottom,dress:o.dress,outer:o.outer,sweater:o.sweater},-.6,'pass');
+  else learnFrom({top:o.top,bottom:o.bottom,dress:o.dress},-.15,'pass');
   if(!(ks.length===1&&ks[0]==='other')) g.queue=[];
 }
-function chooseOutfit(){ const g=S.gen, o=g.current; learnFrom(o,.5); g.selected={...o,accessories:[...(o.accessories||[])],occasion:resolveOcc().label,weather:`${condLabel(g.cond,g.condText)}, ${disp(g.tempF)}`}; g.phase='selected'; g.tab='pieces'; render(); }
+function chooseOutfit(){ const g=S.gen, o=g.current; learnFrom(o,.5,'choose'); g.selected={...o,accessories:[...(o.accessories||[])],occasion:resolveOcc().label,weather:`${condLabel(g.cond,g.condText)}, ${disp(g.tempF)}`}; g.phase='selected'; g.tab='pieces'; render(); }
 function wearOutfit(o){ const g=S.gen; g.mode='today'; g.selected={...o,accessories:[...(o.accessories||[])],why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||`${condLabel(g.cond,g.condText)}, ${disp(g.tempF)}`}; g.current=null; g.phase='selected'; g.tab='pieces'; S.view='outfits'; render(); }
 function selectedView(){
   const g=S.gen, o=g.selected;
@@ -1888,7 +2286,6 @@ function selectedView(){
   return h('div',{class:'selected'},left,right);
 }
 function pieceRow(it,label){ return h('button',{class:'prow2',onclick:()=>openDetail(it)},h('div',{class:'tile'},tileImg(it)),h('div',{},h('div',{class:'nm'},it.name),h('div',{class:'sub'},`${label}, ${colorWord(pc(it).fam)}${it.brand?', '+it.brand:''}`)),h('span',{})); }
-const KNITS=new Set(['sweater','turtleneck','sweatshirt','hoodie','knit-vest']);
 function finishTab(o){
   const ctx=makeCtx(), P=piecesOf(o);
   const changed=()=>{ if(isLiked(o)) persistLike(o); render(); };
@@ -1905,11 +2302,11 @@ function finishTab(o){
       jackets.slice(0,6).map(({it})=>row(it,o.outer===it.id,it.id===bestJ?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ o.outer=o.outer===it.id?null:it.id; changed(); })))
     :h('p',{class:'muted'},'Add jackets and coats to your closet to choose one here.'));
   /* sweater */
-  const sweaters=S.items.filter(i=>slotOf(i)==='top'&&!i.laundry&&i.id!==o.top&&(KNITS.has(i.sub)||flagsOf(i).has('knit'))).map(it=>{ if(!ctx.fit.has(it.id)) ctx.fit.set(it.id,itemFit(it,ctx)); return {it,s:ctx.fit.get(it.id)*.5+pairBonus(it)*1.4+(ctx.t<62?.6:ctx.t>=76?-1.2:0)}; }).sort((a,b)=>b.s-a.s);
-  const sweaterSec=h('div',{class:'finish-sec'},h('h3',{},'Sweater'),h('p',{class:'fs-hint'},o.dress?'Layer a knit over your dress for extra warmth.':'Layer a knit over your top for extra warmth.'),
+  const sweaters=S.items.filter(i=>isLayerKnit(i)&&!i.laundry&&layerOK(o,i)).map(it=>{ if(!ctx.fit.has(it.id)) ctx.fit.set(it.id,itemFit(it,ctx)); return {it,s:ctx.fit.get(it.id)*.5+pairBonus(it)*1.4+(ctx.t<62?.6:ctx.t>=76?-1.2:0)}; }).sort((a,b)=>b.s-a.s);
+  const sweaterSec=h('div',{class:'finish-sec'},h('h3',{},'Sweater'),h('p',{class:'fs-hint'},isLayerKnit(I(o.top))&&I(o.top).sub!=='thin-sweater'?'Your top is already a sweater, so there is nothing to layer over it.':o.dress?'Layer a cardigan or sweater over your dress.':'Layer a sweater, cardigan or vest over your top.'),
     sweaters.length?h('div',{class:'plist'},noneRow(!o.sweater,'No sweater',()=>{ o.sweater=null; changed(); }),
       sweaters.slice(0,6).map(({it},i)=>row(it,o.sweater===it.id,i===0?'Best match':`${styleLabel(it)}, ${colorWord(pc(it).fam)}`,()=>{ o.sweater=o.sweater===it.id?null:it.id; changed(); })))
-    :h('p',{class:'muted'},'Add sweaters, cardigans or knits to your closet to layer one here.'));
+    :h('p',{class:'muted'},'Add thick or thin sweaters, cardigans or sweater vests to your closet to layer one here.'));
   /* shoes */
   const shoes=S.items.filter(i=>slotOf(i)==='shoes'&&(!i.laundry||i.id===o.shoes)).map(it=>({it,s:scoreOutfit({...o,shoes:it.id},ctx)})).sort((a,b)=>b.s-a.s);
   const shoeList=shoes.slice(0,6); if(o.shoes&&!shoeList.some(x=>x.it.id===o.shoes)){ const cur=shoes.find(x=>x.it.id===o.shoes); if(cur) shoeList.push(cur); }
@@ -1931,9 +2328,9 @@ function isLiked(o){ return S.liked.some(l=>l.id===o.id||comboKey(l)===comboKey(
 async function persistLike(o){ const l=S.liked.find(x=>x.id===o.id||comboKey(x)===comboKey(o)); if(!l) return; l.accessories=[...o.accessories]; l.outer=o.outer||null; l.sweater=o.sweater||null; l.shoes=o.shoes||null; try{ await persist('liked',l); }catch(e){} }
 async function toggleLike(o){
   const ex=S.liked.find(l=>l.id===o.id||comboKey(l)===comboKey(o));
-  if(ex){ try{ await DB.del('liked',ex.id); S.liked=S.liked.filter(l=>l!==ex); learnFrom(ex,-.5); toast('Removed from liked'); }catch(e){} return; }
+  if(ex){ try{ await removeRec('liked',ex.id); S.liked=S.liked.filter(l=>l!==ex); learnFrom(ex,-.5);toast('Removed from liked'); }catch(e){} return; }
   const rec={id:o.id||uid(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,sweater:o.sweater||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title,why:o.why||[],tips:o.tips||[],occasion:o.occasion||resolveOcc().label,weather:o.weather||'',likedAt:Date.now()};
-  try{ await persist('liked',rec); S.liked.push(rec); learnFrom(rec,1); toast('Saved to liked outfits'); }catch(e){}
+  try{ await persist('liked',rec); S.liked.push(rec); learnFrom(rec,1,'like'); toast('Saved to liked outfits'); }catch(e){}
 }
 function viewLiked(){
   const v=h('section',{class:'view'});
@@ -1951,6 +2348,26 @@ function openLiked(o){
 }
 
 /* ---------- inspiration (Pinterest) ---------- */
+function tasteBox(){
+  const T=S.learn.taste, st=S.learn.stats;
+  const top=(g,n,sign)=>Object.entries(T[g]).filter(([,v])=>v*sign>.4).sort((a,b)=>(b[1]-a[1])*sign).slice(0,n).map(([k])=>k);
+  const subName=k=>SUB[k]?SUB[k].label:cap(k), famName=k=>cap(colorWord(k));
+  const dot=k=>h('i',{class:'cdot',style:{background:COLOR[k]?COLOR[k].hex:'#999'}});
+  const row=(label,items)=>items.length?h('div',{class:'taste-row'},h('span',{class:'tl'},label),h('div',{class:'taste-chips'},items)):null;
+  const famChip=k=>h('span',{class:'tchip'},dot(k),famName(k));
+  const pairChip=(k,f,col)=>h('span',{class:'tchip'},...k.split('+').flatMap((x,i)=>[i?h('span',{class:'plus'},'+'):null,col?dot(x):null,f(x)]));
+  const total=st.like+st.wear+st.photo+st.choose+st.pass+st.nope;
+  const loves=[row('Colors',top('fam',5,1).map(famChip)),row('Pieces',top('sub',4,1).map(k=>h('span',{class:'tchip'},subName(k)))),
+    row('Color pairings',top('famPair',3,1).map(k=>pairChip(k,famName,true))),row('Combinations',top('subPair',3,1).map(k=>pairChip(k,subName,false))),
+    row('Moods',top('vibe',3,1).map(k=>h('span',{class:'tchip'},VIBE_LABEL[k]||cap(k))))].filter(Boolean);
+  const nos=[row('Colors',top('fam',4,-1).map(famChip)),row('Pieces',top('sub',3,-1).map(k=>h('span',{class:'tchip'},subName(k)))),
+    row('Patterns',top('pat',2,-1).map(k=>h('span',{class:'tchip'},cap(k)))),row('Combinations',top('subPair',2,-1).map(k=>pairChip(k,subName,false)))].filter(Boolean);
+  return h('div',{class:'box taste-box'},h('h2',{},'What I have learned about your style'),
+    h('p',{},total?`From ${st.like} liked ${st.like===1?'outfit':'outfits'}, ${st.wear} worn, ${st.photo} outfit ${st.photo===1?'photo':'photos'}, ${st.choose} chosen and ${st.pass+st.nope} passed on. Every one of these shapes the outfits you get.`:'Like outfits, log what you wear, add photos of looks you love, and pass on what you don\'t. The stylist learns from all of it and shows what it noticed here.'),
+    total?h('div',{class:'taste-cols'},h('div',{},h('h3',{},'You love'),loves.length?loves:h('p',{class:'muted'},'Keep liking and wearing outfits to see patterns here.')),
+      h('div',{},h('h3',{},'You tend to skip'),nos.length?nos:h('p',{class:'muted'},'Nothing yet. Tap "Not my style" when an outfit misses.'))):null,
+    total?h('div',{style:{marginTop:'14px'}},h('button',{class:'btn sm',onclick:()=>{ S.learn=normLearn(null); saveMeta(); toast('The stylist starts fresh'); render(); }},'Reset what it learned')):null);
+}
 function profileSummary(pr){
   const fams=Object.entries(pr.fam).sort((a,b)=>b[1]-a[1]).filter(([,w])=>w>.07).slice(0,3).map(([f])=>colorWord(f));
   const list=fams.length>1?fams.slice(0,-1).join(', ')+' and '+fams[fams.length-1]:(fams[0]||'mixed colors');
@@ -1987,6 +2404,7 @@ function viewInspiration(){
   const matchBox=h('div',{class:'box'},h('h2',{},'From your closet'),h('p',{},pr?'The pieces you own that are closest to your board. Outfits lean on these.':'Once you add pins, the pieces that match your board show up here.'),
     matches.length?h('div',{class:'matchrow'},matches.map(it=>itemCard(it,openDetail))):null);
   v.append(h('div',{class:'insp-grid'},dna,matchBox));
+  v.append(tasteBox());
   if(S.pins.length) v.append(h('h2',{class:'serif-i',style:{fontSize:'30px',margin:'6px 0 16px'}},'Your pins'));
   v.append(h('div',{class:'pins'},S.pins.slice().sort((a,b)=>b.createdAt-a.createdAt).map(pinCard)));
   return v;
@@ -1996,7 +2414,7 @@ function pinCard(p){
     h('div',{class:'pbody'},
       h('div',{class:'wrapchips'},VIBES.map(x=>(p.vibes||[]).includes(x)||!(p.vibes||[]).length?h('button',{class:'chip mini','aria-pressed':String((p.vibes||[]).includes(x)),onclick:async()=>{ p.vibes=p.vibes||[]; const i=p.vibes.indexOf(x); if(i>=0) p.vibes.splice(i,1); else p.vibes.push(x); try{ await persist('pins',p); }catch(e){} render(); }},VIBE_LABEL[x]):null)),
       h('div',{class:'pact'},h('button',{class:'btn sm primary',onclick:()=>recreatePin(p)},icon('spark'),'Recreate this look'),
-        h('button',{class:'btn sm icon-btn','aria-label':'Remove pin',onclick:async()=>{ try{ await DB.del('pins',p.id); await IMG.del(p.img); S.pins=S.pins.filter(x=>x!==p); render(); }catch(e){} }},icon('x')))));
+        h('button',{class:'btn sm icon-btn','aria-label':'Remove pin',onclick:async()=>{ try{ await removeRec('pins',p.id); await IMG.del(p.img); S.pins=S.pins.filter(x=>x!==p); render(); }catch(e){} }},icon('x')))));
 }
 async function addPins(files){
   if(!files.length) return; toast(`Reading ${files.length} ${files.length===1?'pin':'pins'}…`); let n=0;
@@ -2028,9 +2446,9 @@ function rebuildWearIdx(){
 const wearInfo=id=>S.wearIdx.get(id)||{count:0,last:null,days:null};
 async function logWear(o,date){
   const rec={id:uid(),date:date||todayISO(),top:o.top||null,bottom:o.bottom||null,dress:o.dress||null,outer:o.outer||null,sweater:o.sweater||null,shoes:o.shoes||null,accessories:[...(o.accessories||[])],title:o.title||'Outfit',occasion:o.occasion||''};
-  try{ await persist('wear',rec); S.wear.push(rec); rebuildWearIdx(); learnFrom(rec,.7); toast('Saved to your journal. Enjoy your day!'); }catch(e){}
+  try{ await persist('wear',rec); S.wear.push(rec); rebuildWearIdx(); learnFrom(rec,.7,'wear'); toast('Saved to your journal. Enjoy your day!'); }catch(e){}
 }
-async function removeWear(w){ try{ await DB.del('wear',w.id); S.wear=S.wear.filter(x=>x!==w); rebuildWearIdx(); render(); }catch(e){} }
+async function removeWear(w){ try{ await removeRec('wear',w.id); S.wear=S.wear.filter(x=>x!==w); rebuildWearIdx(); render(); }catch(e){} }
 
 /* ---------- laundry ---------- */
 async function setLaundry(it,on){ it.laundry=!!on; try{ await persist('items',it); }catch(e){} settingsChanged(); }
@@ -2166,7 +2584,7 @@ function openOutfitPhoto(){
     try{
       const photo=await IMG.put(data.photo);
       const rec={id:uid(),...o,title:fin.title,why:fin.why,tips:[],occasion:OCC[occ].label,weather:'',likedAt:Date.now(),photo,source:'photo'};
-      await persist('liked',rec); S.liked.push(rec); learnFrom(rec,1.2);
+      await persist('liked',rec); S.liked.push(rec); learnFrom(rec,1.4,'photo');
       const pinData=await analyzePin(file); const pimg=await IMG.put(pinData.photo);
       const pin={id:uid(),img:pimg,palette:pinData.palette,colorful:pinData.colorful,light:pinData.light,contrast:pinData.contrast,busy:pinData.busy,warm:pinData.warm,vibes:[],createdAt:Date.now(),source:'outfit',liked:rec.id};
       await persist('pins',pin); S.pins.push(pin);
@@ -2337,42 +2755,39 @@ const dataToBlob=async d=>(await fetch(d)).blob();
 async function exportBackup(){
   toast('Preparing your backup…');
   const keys=await DB.keys('images'); const images={}; for(const k of keys){ const b=await DB.get('images',k); if(b) images[k]=await blobToData(b); }
-  const data={app:'closet',version:2,exportedAt:new Date().toISOString(),items:S.items,liked:S.liked,pins:S.pins,wear:S.wear,settings:{profileUse:S.profileUse,myVibes:S.myVibes,learn:S.learn,look:S.look,plan:S.plan,trip:S.trip},images};
+  const data={app:'closet',version:2,exportedAt:new Date().toISOString(),items:S.items,liked:S.liked,pins:S.pins,wear:S.wear,settings:{profileUse:S.profileUse,myVibes:S.myVibes,learn:S.learn,plan:S.plan,trip:S.trip},images};
   const blob=new Blob([JSON.stringify(data)],{type:'application/json'}); const a=h('a',{href:URL.createObjectURL(blob),download:`closet-backup-${new Date().toISOString().slice(0,10)}.json`});
   document.body.append(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000);
 }
 async function importBackup(file){
   try{
     const d=JSON.parse(await file.text()); if(d.app!=='closet') throw new Error('Not a closet backup');
-    toast('Restoring…');
-    for(const [k,v] of Object.entries(d.images||{})){ const b=await dataToBlob(v); await DB.put('images',k,b); if(!IMG.urls.has(k)) IMG.urls.set(k,URL.createObjectURL(b)); }
-    for(const it of d.items||[]){ await DB.put('items',it.id,it); if(!I(it.id)) S.items.push(it); }
-    for(const l of d.liked||[]){ await DB.put('liked',l.id,l); if(!S.liked.some(x=>x.id===l.id)) S.liked.push(l); }
-    for(const p of d.pins||[]){ await DB.put('pins',p.id,p); if(!S.pins.some(x=>x.id===p.id)) S.pins.push(p); }
-    for(const w of d.wear||[]){ await DB.put('wear',w.id,w); if(!S.wear.some(x=>x.id===w.id)) S.wear.push(w); } rebuildWearIdx();
-    if(d.settings){ if(!S.plan&&d.settings.plan) S.plan=d.settings.plan; if(!S.trip&&d.settings.trip) S.trip=d.settings.trip; }
-    if(d.settings){ S.myVibes=[...new Set([...S.myVibes,...(d.settings.myVibes||[])])]; const L=d.settings.learn||{}; for(const [k,v] of Object.entries(L.pairs||{})) S.learn.pairs[k]=v; for(const [k,v] of Object.entries(L.items||{})) S.learn.items[k]=v; await saveMeta(); }
-    toast(`Restored ${(d.items||[]).length} pieces, ${(d.pins||[]).length} pins and ${(d.liked||[]).length} liked outfits`); document.querySelector('.back')?.remove(); render();
+    toast('Restoring…'); const images={}; for(const [k,v] of Object.entries(d.images||{})) images[k]=await dataToBlob(v);
+    await mergeCloset({...d,images});
+    toast(`Restored ${(d.items||[]).length} pieces, ${(d.pins||[]).length} pins and ${(d.liked||[]).length} liked outfits`); document.querySelector('.back')?.remove();
   }catch(e){ console.warn(e); toast("That file isn't a closet backup."); }
 }
 function openSettings(){
   const fileIn=h('input',{type:'file',accept:'application/json,.json',class:'sr',onchange:e=>{ if(e.target.files[0]) importBackup(e.target.files[0]); }});
   openModal(h('div',{},h('div',{class:'modal-head'},h('h2',{},'Settings')),h('div',{class:'modal-body',style:{display:'grid',gap:'20px'}},
+    syncSection(),
     h('div',{},h('h3',{style:{fontSize:'24px',fontStyle:'italic',fontWeight:500,marginBottom:'10px'}},'Color theme'),paletteSection()),
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'Your data'),
-      h('p',{class:'muted',style:{margin:'0 0 12px'}},'Everything is saved privately in this browser. To move your closet to another device, tap Download backup here, send the file to that device, then open these settings there and tap Restore from backup.'),
+      h('p',{class:'muted',style:{margin:'0 0 12px'}},Cloud.on?'A backup file is a copy of your whole closet, including photos, to keep somewhere safe.':'Everything is saved privately in this browser. To move your closet to another device, turn on sync above, or download a backup here and restore it there.'),
       h('div',{style:{display:'flex',gap:'10px',flexWrap:'wrap'}},h('button',{class:'btn primary',onclick:exportBackup},'Download backup'),h('label',{class:'btn'},fileIn,'Restore from backup'))),
     (()=>{ const todo=S.items.filter(i=>!i.polished&&i.cutout&&i.img&&i.img!==i.photo).length; const b=h('button',{class:'btn',disabled:!todo,onclick:e=>polishCloset(e.currentTarget)},todo?`Polish ${todo} ${todo===1?'photo':'photos'}`:'All photos polished');
       return h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'Polish my existing photos'),
         h('p',{class:'muted',style:{margin:'0 0 12px'}},'Gives pieces you added earlier truer colors, smoother edges and a straight, even frame. Cutouts you fixed by hand are kept.'),b); })(),
     h('div',{},h('h3',{style:{fontSize:'20px',fontStyle:'italic',fontWeight:400,marginBottom:'6px'}},'What the stylist has learned'),
-      h('p',{class:'muted',style:{margin:'0 0 12px'}},`${Object.keys(S.learn.pairs).length} pairings remembered from your likes, choices and passes.`),
-      h('button',{class:'btn',onclick:()=>{ S.learn={pairs:{},items:{}}; saveMeta(); toast('The stylist starts fresh'); }},'Reset what it learned')),
-    h('div',{class:'foot',style:{borderTop:'1px solid var(--line)'}},h('span',{class:'muted'},`Signed in as ${S.userName}`),h('button',{class:'btn',onclick:signOut},'Sign out')))),{size:'narrow'});
+      h('p',{class:'muted',style:{margin:'0 0 12px'}},`Learned from ${S.learn.stats.like} likes, ${S.learn.stats.wear} worn outfits, ${S.learn.stats.photo} outfit photos and ${S.learn.stats.pass+S.learn.stats.nope} passes. See the details on the Inspiration page.`),
+      h('button',{class:'btn',onclick:()=>{ S.learn=normLearn(null); saveMeta(); toast('The stylist starts fresh'); }},'Reset what it learned')),
+    h('div',{class:'foot',style:{borderTop:'1px solid var(--line)'}},h('span',{class:'muted'},`Signed in as ${Cloud.on?Cloud.email:S.userName}`),h('button',{class:'btn',onclick:signOut},'Sign out')))),{size:'narrow'});
 }
 
 /* ---------- boot ---------- */
 (async function boot(){
+  if(cloudConfig()){ try{ const c=await loadSupabase(); const {data}=await c.auth.getSession(); if(data&&data.session){ await enterCloud(data.session.user); return; } render(); return; }
+    catch(e){ console.warn(e); Cloud.failed=true; setTimeout(()=>toast("Couldn't reach your account, so this device's own closet is shown."),400); } }
   const a=Accounts.load();
   if(a.session&&a.users[a.session]){ try{ await enter(a.session,a.users[a.session].name); return; }catch(e){ console.warn(e); } }
   render();

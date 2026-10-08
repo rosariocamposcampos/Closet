@@ -149,12 +149,6 @@ Find **`const COLORS=[`**. Each color family has a name, a hex code, and a `1` i
 
 Find **`const VIBE_PAIRS`**. Each pair has a number from 0 (they never mix) to 1 (perfect together). For example, `'sporty-glam':.1` means sporty and glam rarely work.
 
-## 9. The mannequin
-
-Find **`const MQ={`**. Each line says where a type of clothing sits on the mannequin, as `[left, top, width, height]` on a figure that is 240 wide and 560 tall (the head is at the top, the feet at about 520). For example, `'wool-coat':[50,84,140,392]` makes wool coats start at the shoulders and reach below the knee. Make the last number bigger for longer pieces, or the third number bigger for wider ones. You can add a line for any style key from section 3.
-
-The figure itself is the drawing in **`const FIGURE_SVG`**. Its colors come from `--surface` (the body) and `--line-strong` (the outline and stand).
-
 ## 10. Planner, journal and closet gaps
 
 - **How much the week avoids repeats:** find **`if(ctx.planUse)`**. The second list (`top:-2.5, dress:-2.5, bottom:-1 ...`) is for My week. More negative means less repetition.
@@ -163,7 +157,48 @@ The figure itself is the drawing in **`const FIGURE_SVG`**. Its colors come from
 - **When a piece counts as forgotten:** find **`x.d>=30`** in the journal and change `30` days.
 - **Closet gap rules:** find **`function closetGaps`**. Each `add(...)` line is one suggestion with its reason, written in plain words you can edit.
 
+## 11. "Something else" options
+
+Every list in the app ends with **Something else**, which opens a box for your own words:
+
+- **Weather:** find **`function condFromText`** to teach it new words. Each line lists words that count as snow, rain, wind or sun; anything else counts as cloudy.
+- **Occasion:** find **`function occFromText`**. Each line lists words and the occasion they act like (for example, "interview" acts like Networking).
+- **"What should change?":** find **`function feedbackFromText`** to add words for more formal, more casual, warmer, cooler, colors, shoes and layers.
+- **Your own type of clothing:** you choose how it's worn (top, bottom, dress, layer, shoes or accessory), and it is styled like those.
+
+## 12. Photo polish
+
+Find **`function wbGains`**. It decides when to correct colors: only when the surface around the piece is light and close to white (`lab[0]<55` means too dark, `C>20` means too colorful). The numbers `.7` (strength) and `1.22` (how much a dim photo can be brightened) control how strong the correction is.
+
+Find **`function polishCanvas`** for the rest: `deg<2||deg>12` is the range of tilts that get straightened, `.05` is the padding around each piece, and `820` is the largest size a cutout is saved at.
+
+## 13. Finish the look
+
+Find **`function finishTab`**. It lists jackets, sweaters, shoes and accessories for a chosen outfit. The sweaters it offers come from the Sweaters type and the layering rules in section 14.
+
 ---
+
+## 14. Sweaters and layering
+
+Sweaters are their own type, in the **`2. WARDROBE CATALOG`** under `k:'sweaters'`. Each style's flags decide how it's worn:
+
+- `layer`: can be worn alone or over a top or dress (thick sweater, thin sweater, cardigan, quarter-zip, sweater vest)
+- `base`: worn as a top that other layers go over (turtleneck)
+- `vestonly`: always needs something underneath (sweater vest)
+
+Find **`function layerOK`** for the rules about what can go under what. **`const VEST_BASES`** lists the tops a sweater vest can go over, and **`const NO_LAYER`** lists tops nothing should be layered over (like hoodies).
+
+## 15. How it learns your style
+
+Find **`function tasteUpdate`**. Every like, worn outfit, outfit photo, choice and pass adds to scores for colors (`fam`), pieces (`sub`), patterns (`pat`), moods (`vibe`), color pairings (`famPair`) and combinations (`subPair`). The `.985` makes old habits slowly fade so recent taste counts more.
+
+How strongly each action teaches it is set where **`learnFrom(`** is called: a like is `1`, an outfit photo `1.4`, wearing `.7`, choosing `.5`, a pass `-.15`, and "Not my style" `-1`.
+
+To make learning matter more or less overall, change `learned` in **`const WEIGHTS`**. Find **`function learnedScore`** for the bonus for outfits similar to ones you liked (`(best-.32)*2.4`) and the penalty for ones like those you rejected.
+
+## 16. Sync settings
+
+Your Supabase keys go in **`const CLOUD=`** near the top of the script (see `SYNC-SETUP.md`). Leave both empty to keep everything in the browser only.
 
 ## Quick reference
 
@@ -183,7 +218,11 @@ The figure itself is the drawing in **`const FIGURE_SVG`**. Its colors come from
 | Outfit formulas | `const FORMULAS` |
 | Combinations to avoid | `const CLASHES` |
 | The feedback options | `const FEEDBACK` |
-| Where clothes sit on the mannequin | `const MQ={` |
 | Planner repeats and trip reuse | `if(ctx.planUse)` |
 | Closet gap suggestions | `function closetGaps` |
+| Words for "Something else" weather, occasions and feedback | `condFromText`, `occFromText`, `feedbackFromText` |
+| Photo color correction and straightening | `function wbGains`, `function polishCanvas` |
+| Sweater layering rules | `function layerOK`, `const VEST_BASES` |
+| How it learns your style | `function tasteUpdate`, `function learnedScore` |
+| Sync keys | `const CLOUD=` |
 | The app name | `<title>` near the top, and `'Closet'` in `class:'brand'` |
